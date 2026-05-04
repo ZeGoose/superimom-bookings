@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Superimom Family Bookings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --earth:   #3b2f1e;
+  --bark:    #5c4a32;
+  --sand:    #c9b48a;
+  --dust:    #e8dcc8;
+  --fog:     #f4efe6;
+  --sky:     #f9f6f0;
+  --rooi-bg: #e8f0e4; --rooi-mid: #4a7c59; --rooi-dk: #2d5a3d;
+  --stf-bg:  #e2ecf4; --stf-mid:  #3a6fa8; --stf-dk:  #1e4876;
+  --lc-bg:   #f5edd8; --lc-mid:   #b07d2e; --lc-dk:   #7a5418;
+  --danger:  #c0392b; --warn: #d4881a;
+  --r: 10px; --rl: 14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:var(--sky);color:var(--earth);min-height:100vh}
+
+/* HEADER */
+header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--dust);letter-spacing:.02em;line-height:1.1}
+.logo-text small{display:block;font-size:.58rem;font-family:'Jost',sans-serif;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:var(--sand);margin-top:1px}
+.header-right{display:flex;gap:8px;align-items:center}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--r);border:none;font-family:'Jost',sans-serif;font-size:.82rem;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btn-primary{background:var(--rooi-mid);color:#fff}.btn-primary:hover{background:var(--rooi-dk)}
+.btn-ghost{background:rgba(255,255,255,.1);color:var(--dust)}.btn-ghost:hover{background:rgba(255,255,255,.18)}
+.btn-outline{background:transparent;border:1px solid var(--dust);color:var(--bark)}.btn-outline:hover{background:var(--dust)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{opacity:.88}
+.btn-sm{padding:4px 10px;font-size:.75rem}
+.btn-wa{background:#25d366;color:#fff}.btn-wa:hover{background:#20ba58}
+.btn-copy{background:var(--bark);color:#fff}.btn-copy:hover{background:var(--earth)}
+
+/* LAYOUT */
+.app{max-width:1100px;margin:0 auto;padding:20px 16px}
+.section-gap{margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--dust);border-radius:var(--rl);overflow:hidden}
+
+/* LEGEND */
+.legend-bar{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:10px 16px;background:#fff;border:1px solid var(--dust);border-radius:var(--r)}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--bark)}
+.leg-icon{width:30px;height:22px;display:flex;align-items:center;justify-content:center}
+
+/* FILTER */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filter-bar select{padding:7px 10px;border:1px solid var(--dust);border-radius:var(--r);font-family:'Jost',sans-serif;font-size:.83rem;background:#fff;color:var(--earth);cursor:pointer}
+.year-nav{display:flex;align-items:center;gap:8px;margin-left:auto;background:#fff;border:1px solid var(--dust);border-radius:var(--r);padding:4px 12px}
+.year-label{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;min-width:44px;text-align:center}
+.year-btn{background:none;border:none;cursor:pointer;color:var(--bark);font-size:.8rem;padding:2px 4px}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.month-card{background:#fff;border:1px solid var(--dust);border-radius:var(--rl);overflow:hidden}
+.month-header{background:var(--earth);color:var(--dust);padding:8px 12px;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.day-names{display:grid;grid-template-columns:repeat(7,1fr);background:var(--fog);border-bottom:1px solid var(--dust)}
+.day-name{text-align:center;padding:4px 0;font-size:.62rem;font-weight:600;color:var(--sand);letter-spacing:.08em;text-transform:uppercase}
+.days-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.day-cell{min-height:42px;padding:2px 3px 3px;border-right:1px solid var(--dust);border-bottom:1px solid var(--dust);cursor:pointer;transition:background .1s}
+.day-cell:nth-child(7n){border-right:none}
+.day-cell:hover{background:var(--fog)}
+.day-cell.empty{cursor:default;background:var(--sky)}
+.day-num{font-size:.68rem;font-weight:500;color:var(--bark);width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-bottom:1px}
+.day-cell.today .day-num{background:var(--rooi-mid);color:#fff}
+.day-chip{font-size:.56rem;font-weight:600;padding:1px 3px;border-radius:3px;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.chip-rooi{background:var(--rooi-bg);color:var(--rooi-dk)}
+.chip-stf{background:var(--stf-bg);color:var(--stf-dk)}
+.chip-lc{background:var(--lc-bg);color:var(--lc-dk)}
+
+/* TOOLTIP — desktop hover only */
+.tooltip{display:none;position:fixed;z-index:999;background:var(--earth);color:var(--dust);border-radius:var(--r);padding:10px 13px;max-width:240px;font-size:.8rem;pointer-events:none;line-height:1.5;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.tooltip h4{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:600;color:var(--sand);margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:4px}
+.tip-name{font-weight:600;color:#fff}
+.tip-tag{display:inline-block;font-size:.65rem;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:3px}
+.tt-rooi{background:var(--rooi-bg);color:var(--rooi-dk)}
+.tt-stf{background:var(--stf-bg);color:var(--stf-dk)}
+.tt-lc{background:var(--lc-bg);color:var(--lc-dk)}
+.tip-booking{margin-bottom:5px}.tip-booking:last-child{margin-bottom:0}
+
+/* BOTTOM SHEET — mobile day detail */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(30,20,10,.45);z-index:300}
+.sheet-overlay.open{display:block}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--sky);border-radius:18px 18px 0 0;z-index:301;padding:0 0 32px;box-shadow:0 -8px 40px rgba(0,0,0,.18);transform:translateY(100%);transition:transform .28s cubic-bezier(.32,1,.28,1)}
+.bottom-sheet.open{transform:translateY(0)}
+.sheet-handle{width:40px;height:4px;background:var(--dust);border-radius:2px;margin:12px auto 0}
+.sheet-header{padding:14px 18px 10px;border-bottom:1px solid var(--dust);display:flex;align-items:center;justify-content:space-between}
+.sheet-date{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--earth)}
+.sheet-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--bark);padding:0 4px;line-height:1}
+.sheet-body{padding:12px 18px}
+.sheet-booking{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--dust)}
+.sheet-booking:last-child{border-bottom:none}
+.sheet-booking-name{font-weight:600;font-size:.95rem;color:var(--earth);margin-bottom:4px}
+.sheet-booking-notes{font-size:.78rem;color:var(--bark);font-style:italic;margin-top:3px}
+.sheet-tags{display:flex;flex-wrap:wrap;gap:4px}
+
+/* SUMMARY */
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--dust);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700}
+.booking-list{padding:8px}
+.booking-card{border:1px solid var(--dust);border-radius:var(--r);padding:10px 12px;margin-bottom:7px;transition:box-shadow .15s;background:#fff}
+.booking-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.booking-card.is-past{opacity:.5}
+.bc-name{font-weight:600;font-size:.95rem}
+.bc-dates{font-size:.8rem;color:var(--bark);margin-top:2px}
+.bc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.res-tag{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;padding:2px 9px 2px 6px;border-radius:20px}
+.tag-rooi{background:var(--rooi-bg);color:var(--rooi-dk)}
+.tag-stf{background:var(--stf-bg);color:var(--stf-dk)}
+.tag-lc{background:var(--lc-bg);color:var(--lc-dk)}
+.bc-notes{font-size:.78rem;color:var(--bark);margin-top:5px;font-style:italic}
+.bc-actions{display:flex;gap:5px;margin-top:7px}
+.empty-state{text-align:center;padding:40px 16px;color:var(--sand)}
+.empty-state p{font-size:.9rem;margin-top:8px}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(30,20,10,.55);z-index:200;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+@media(min-width:600px){.overlay{align-items:center;padding:16px}.modal{border-radius:var(--rl)!important;max-height:90vh!important}}
+.modal{background:var(--sky);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border-radius:var(--rl) var(--rl) 0 0;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;background:var(--sky);z-index:1;border-bottom:1px solid var(--dust)}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--bark);line-height:1;padding:2px 6px}
+.modal-body{padding:16px 18px}
+.modal-footer{padding:14px 18px 18px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--dust)}
+
+/* FORM */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--bark);margin-bottom:6px}
+.form-control{width:100%;padding:9px 12px;border:1.5px solid var(--dust);border-radius:var(--r);font-family:'Jost',sans-serif;font-size:.9rem;background:#fff;color:var(--earth);transition:border-color .15s}
+.form-control:focus{outline:none;border-color:var(--rooi-mid)}
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* RESOURCE CARDS */
+.resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.resource-card{border:2px solid var(--dust);border-radius:var(--r);padding:11px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;background:#fff;user-select:none}
+.resource-card:hover{border-color:var(--sand)}
+.resource-card.full-width{grid-column:1/-1}
+.resource-card.sel-rooi{border-color:var(--rooi-mid);background:var(--rooi-bg)}
+.resource-card.sel-stf{border-color:var(--stf-mid);background:var(--stf-bg)}
+.resource-card.sel-none{border-color:var(--sand);background:var(--fog)}
+.rc-icon{width:34px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rc-label{font-size:.85rem;font-weight:500;color:var(--earth);line-height:1.2}
+.rc-label small{display:block;font-size:.68rem;color:var(--bark);font-weight:400}
+
+/* LC TOGGLE */
+.lc-toggle{border:2px solid var(--dust);border-radius:var(--r);padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;background:#fff;user-select:none;width:100%}
+.lc-toggle:hover{border-color:var(--sand)}
+.lc-toggle.sel-lc{border-color:var(--lc-mid);background:var(--lc-bg)}
+.check-box{width:20px;height:20px;border:2px solid var(--dust);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;transition:all .15s;background:#fff}
+.lc-toggle.sel-lc .check-box{background:var(--lc-mid);border-color:var(--lc-mid)}
+
+/* ALERTS */
+.alert{padding:9px 12px;border-radius:8px;font-size:.83rem;margin-bottom:8px;line-height:1.45}
+.alert-error{background:#fdf0ee;color:var(--danger);border:1px solid #f5c6c2}
+.alert-warning{background:#fef6ec;color:var(--warn);border:1px solid #fad7a0}
+.alert-success{background:var(--rooi-bg);color:var(--rooi-dk);border:1px solid #b8d4be}
+
+/* WHATSAPP */
+.wa-bubble{background:#e9f5e1;border:1px solid #b7dda8;border-radius:4px 12px 12px 12px;padding:12px 14px;font-size:.9rem;line-height:1.6;color:#1a3a0f;margin-bottom:14px}
+.wa-btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ADMIN */
+.members-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 12px}
+.member-pill{display:flex;align-items:center;gap:5px;background:var(--fog);border:1px solid var(--dust);border-radius:20px;padding:4px 10px 4px 12px;font-size:.83rem}
+.member-pill button{background:none;border:none;cursor:pointer;color:var(--danger);font-size:1rem;line-height:1;padding:0;opacity:.7}
+.member-pill button:hover{opacity:1}
+
+/* TABS */
+.tab-bar{display:flex;gap:2px;background:var(--earth);padding:0 20px;border-top:1px solid rgba(255,255,255,.08)}
+.tab-btn{padding:10px 18px;font-family:'Jost',sans-serif;font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab-btn.active{color:var(--sand);border-bottom-color:var(--sand)}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,.8)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/* TASKS */
+.tasks-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.tasks-toolbar select{padding:7px 10px;border:1px solid var(--dust);border-radius:var(--r);font-family:'Jost',sans-serif;font-size:.83rem;background:#fff;color:var(--earth);cursor:pointer}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-card{background:#fff;border:1px solid var(--dust);border-radius:var(--r);padding:11px 14px;display:flex;align-items:flex-start;gap:12px;transition:box-shadow .15s}
+.task-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.task-card.done{opacity:.5}
+.task-check{width:22px;height:22px;border:2px solid var(--dust);border-radius:6px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;margin-top:1px;background:#fff}
+.task-check.checked{background:var(--rooi-mid);border-color:var(--rooi-mid);color:#fff}
+.task-body{flex:1;min-width:0}
+.task-text{font-size:.9rem;font-weight:500;color:var(--earth);line-height:1.4}
+.task-card.done .task-text{text-decoration:line-through;color:var(--bark)}
+.task-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;align-items:center}
+.task-cat{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+.cat-restock{background:#fef3c7;color:#92400e}
+.cat-repair{background:#fee2e2;color:#991b1b}
+.cat-collect{background:#e0f2fe;color:#0c4a6e}
+.cat-general{background:var(--fog);color:var(--bark)}
+.task-loc{font-size:.72rem;color:var(--bark)}
+.task-by{font-size:.72rem;color:var(--sand)}
+.task-actions{display:flex;gap:4px;flex-shrink:0}
+
+/* PHOTO FOLDER CARDS */
+.photo-folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:14px}
+.photo-folder-card{display:block;text-decoration:none;background:#fff;border:1px solid var(--dust);border-radius:var(--rl);overflow:hidden;transition:box-shadow .2s,transform .15s;cursor:pointer}
+.photo-folder-card:hover{box-shadow:0 8px 30px rgba(0,0,0,.12);transform:translateY(-2px)}
+.pfc-art{width:100%;height:160px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pfc-art svg{width:100%;height:100%}
+.pfc-rooi{background:linear-gradient(160deg,#f5edd8 0%,#e8dcc8 100%)}
+.pfc-stf{background:linear-gradient(160deg,#e2ecf4 0%,#c8dff0 100%)}
+.pfc-body{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--dust)}
+.pfc-icon{width:32px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pfc-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--earth);line-height:1.2}
+.pfc-sub{font-size:.72rem;color:var(--bark);margin-top:2px}
+
+/* PHOTOS */
+.photos-intro{background:#fff;border:1px solid var(--dust);border-radius:var(--rl);padding:20px;margin-bottom:14px}
+.photos-intro h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;margin-bottom:6px}
+.photos-intro p{font-size:.85rem;color:var(--bark);line-height:1.6;margin-bottom:12px}
+.drive-frame-wrap{background:#fff;border:1px solid var(--dust);border-radius:var(--rl);overflow:hidden}
+.drive-frame-wrap iframe{width:100%;height:600px;border:none;display:block}
+.drive-placeholder{text-align:center;padding:60px 20px;color:var(--sand)}
+.drive-placeholder svg{margin-bottom:12px;opacity:.4}
+.drive-placeholder p{font-size:.9rem;margin-bottom:4px}
+.drive-placeholder small{font-size:.78rem;color:var(--dust)}
+.admin-drive-setup{background:var(--fog);border:1px solid var(--dust);border-radius:var(--r);padding:12px 14px;margin-top:12px;font-size:.83rem;color:var(--bark);line-height:1.6}
+.admin-drive-setup strong{color:var(--earth)}
+
+/* LOADING */
+.loading-bar{position:fixed;top:0;left:0;right:0;height:3px;background:var(--rooi-mid);z-index:9999;display:none;animation:loadAnim 1.2s ease infinite}
+@keyframes loadAnim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+@media(max-width:500px){
+  .resource-grid{grid-template-columns:1fr}
+  .resource-card.full-width{grid-column:auto}
+  .cal-grid{grid-template-columns:1fr}
+  .date-row{grid-template-columns:1fr}
+  .header-right .btn span{display:none}
+}
+</style>
+</head>
+<body>
+<div class="loading-bar" id="loadingBar"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <!-- Acacia logo modelled on sign-style flat-top silhouette -->
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Trunk: single slightly-leaning trunk -->
+      <path d="M21 42 C21 42 20 36 20.5 30 C21 24 22 20 22 20" stroke="#c9b48a" stroke-width="2.8" stroke-linecap="round"/>
+      <!-- Root flare -->
+      <path d="M21 42 C18 42 15 43 13 44" stroke="#c9b48a" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M21 42 C23 42 26 43 28 44" stroke="#c9b48a" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Lower main branches — asymmetric, left heavier like the sign -->
+      <path d="M21 32 C17 30 11 28 6 28" stroke="#c9b48a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M21 30 C24 29 29 27 34 27" stroke="#c9b48a" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Mid branches -->
+      <path d="M21.5 26 C18 24 13 22 9 21" stroke="#c9b48a" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M21.5 25 C24.5 23.5 28 22 33 21" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+      <!-- Upper branches fanning out flat -->
+      <path d="M22 21 C19 19.5 14 18 8 18" stroke="#c9b48a" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M22 21 C25 19.5 30 18 36 18" stroke="#c9b48a" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M22 20 C22 18 22 16 22 15" stroke="#c9b48a" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- Flat canopy — wide layered foliage, very flat top like sign acacia -->
+      <!-- Bottom foliage layer — widest -->
+      <ellipse cx="7"  cy="27" rx="5"   ry="2"   fill="#3d6b4e"/>
+      <ellipse cx="15" cy="25" rx="5.5" ry="2.2" fill="#3d6b4e"/>
+      <ellipse cx="23" cy="24" rx="5"   ry="2"   fill="#3d6b4e"/>
+      <ellipse cx="31" cy="25" rx="5"   ry="2"   fill="#3d6b4e"/>
+      <ellipse cx="38" cy="26" rx="4.5" ry="2"   fill="#3d6b4e"/>
+      <!-- Mid foliage layer -->
+      <ellipse cx="10" cy="22" rx="5.5" ry="2.2" fill="#4a7c59"/>
+      <ellipse cx="18" cy="20" rx="6"   ry="2.4" fill="#4a7c59"/>
+      <ellipse cx="26" cy="20" rx="5.5" ry="2.2" fill="#4a7c59"/>
+      <ellipse cx="33" cy="21" rx="5"   ry="2"   fill="#4a7c59"/>
+      <!-- Upper foliage layer — flat crown -->
+      <ellipse cx="13" cy="18" rx="5.5" ry="2"   fill="#52875f"/>
+      <ellipse cx="20" cy="16.5" rx="6" ry="2.2" fill="#52875f"/>
+      <ellipse cx="28" cy="17" rx="5.5" ry="2"   fill="#52875f"/>
+      <!-- Top cap — very flat, wide -->
+      <ellipse cx="22" cy="15" rx="10"  ry="2.5" fill="#4a7c59"/>
+      <ellipse cx="22" cy="13.5" rx="8" ry="2"   fill="#52875f"/>
+    </svg>
+    <div class="logo-text">Superimom<small>Family Bookings</small></div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost" onclick="switchUser()" id="userBadge" title="Switch user" style="font-size:.8rem;gap:5px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+    <button class="btn btn-ghost" onclick="openAdmin()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Admin</span>
+    </button>
+    <button class="btn btn-primary" onclick="openBooking()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>New Booking</span>
+    </button>
+  </div>
+</header>
+
+<!-- TAB BAR (inside header area, below header) -->
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('bookings',this)">&#128197; Bookings</button>
+  <button class="tab-btn" onclick="switchTab('tasks',this)">&#9989; Tasks</button>
+  <button class="tab-btn" onclick="switchTab('photos',this)">&#128247; Photos</button>
+</nav>
+
+<div class="app">
+
+  <!-- ══ BOOKINGS TAB ══ -->
+  <div class="tab-pane active" id="tab-bookings">
+    <div class="legend-bar section-gap">
+      <div class="legend-item">
+        <div class="leg-icon">
+          <svg width="26" height="20" viewBox="0 0 26 20" fill="none">
+            <rect x="12" y="13" width="2" height="7" rx="1" fill="#c9b48a"/>
+            <line x1="13" y1="14" x2="6"  y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="13" y1="14" x2="20" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="13" y1="13" x2="13" y2="8"  stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+            <ellipse cx="4"  cy="9"  rx="4" ry="2.2" fill="#4a7c59"/>
+            <ellipse cx="13" cy="6"  rx="5" ry="2.5" fill="#52875f"/>
+            <ellipse cx="22" cy="9"  rx="4" ry="2.2" fill="#4a7c59"/>
+          </svg>
+        </div>
+        Rooibokkraal
+      </div>
+      <div class="legend-item">
+        <div class="leg-icon">
+          <svg width="30" height="20" viewBox="0 0 30 20" fill="none">
+            <path d="M1 12 C4.5 7, 8 15, 11.5 12 C15 7, 18.5 15, 22 12 C25.5 7, 29 12, 29 12" stroke="#3a6fa8" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+            <path d="M3 16 C6 12.5, 9.5 17, 13 16 C16.5 12.5, 20 17, 23 16" stroke="#3a6fa8" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".45"/>
+          </svg>
+        </div>
+        St Francis
+      </div>
+      <div class="legend-item">
+        <div class="leg-icon">
+          <svg width="36" height="20" viewBox="0 0 36 20" fill="none">
+            <rect x="2" y="8" width="30" height="7" rx="1.5" fill="#b07d2e"/>
+            <path d="M7 8 L9.5 3 H25 L27 8 Z" fill="#b07d2e"/>
+            <path d="M10 8 L12 4.5 H23.5 L25 8 Z" fill="#7a5418" opacity=".45"/>
+            <circle cx="9"  cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="9"  cy="15.5" r="1.6" fill="#c9b48a"/>
+            <circle cx="27" cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="27" cy="15.5" r="1.6" fill="#c9b48a"/>
+            <rect x="10" y="2" width="16" height="1.2" rx=".6" fill="#c9b48a"/>
+            <circle cx="34.5" cy="11" r="2.8" fill="#3b2f1e"/><circle cx="34.5" cy="11" r="1.1" fill="#c9b48a"/>
+          </svg>
+        </div>
+        Land Cruiser
+      </div>
+    </div>
+    <div class="filter-bar section-gap">
+      <select id="fResource" onchange="renderAll()">
+        <option value="">All Resources</option>
+        <option value="Rooibokkraal">Rooibokkraal</option>
+        <option value="St Francis">St Francis</option>
+        <option value="Land Cruiser">Land Cruiser</option>
+      </select>
+      <select id="fPerson" onchange="renderAll()"><option value="">All People</option></select>
+      <select id="fMonth" onchange="renderAll()">
+        <option value="">All Months</option>
+        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+      </select>
+      <div class="year-nav">
+        <button class="year-btn" onclick="changeYear(-1)">&#9664;</button>
+        <span class="year-label" id="yearLabel"></span>
+        <button class="year-btn" onclick="changeYear(1)">&#9654;</button>
+      </div>
+    </div>
+    <div class="cal-grid section-gap" id="calGrid"></div>
+    <div class="card section-gap">
+      <div class="panel-header"><span class="panel-title">Upcoming Bookings</span></div>
+      <div class="booking-list" id="bookingList"></div>
+    </div>
+  </div>
+
+  <!-- ══ TASKS TAB ══ -->
+  <div class="tab-pane" id="tab-tasks">
+    <div class="tasks-toolbar">
+      <select id="tFilterCat" onchange="renderTasks()">
+        <option value="">All Categories</option>
+        <option value="Restock">Restock</option>
+        <option value="Repair">Repair</option>
+        <option value="Collect">Collect</option>
+        <option value="General">General</option>
+      </select>
+      <select id="tFilterLoc" onchange="renderTasks()">
+        <option value="">All Locations</option>
+        <option value="Rooibokkraal">Rooibokkraal</option>
+        <option value="St Francis">St Francis</option>
+        <option value="Land Cruiser">Land Cruiser</option>
+        <option value="General">General</option>
+      </select>
+      <select id="tFilterStatus" onchange="renderTasks()">
+        <option value="open">Open tasks</option>
+        <option value="all">All tasks</option>
+        <option value="done">Completed</option>
+      </select>
+      <button class="btn btn-primary" onclick="openTaskModal()" style="margin-left:auto">+ Add Task</button>
+    </div>
+    <div class="task-list" id="taskList"></div>
+  </div>
+
+  <!-- ══ PHOTOS TAB ══ -->
+  <div class="tab-pane" id="tab-photos">
+    <div class="photos-intro">
+      <h3>Family Photos</h3>
+      <p>Tap a folder to open it in Google Drive. Add your own photos directly in Drive and they'll be shared with everyone.</p>
+    </div>
+
+    <div class="photo-folders">
+
+      <!-- Rooibokkraal -->
+      <a class="photo-folder-card" href="https://drive.google.com/drive/folders/1cbAfnM3imN6KP7BXI7kukbNkezyKUqEQ" target="_blank">
+        <div class="pfc-art pfc-rooi">
+          <!-- Acacia silhouette -->
+          <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Sky gradient suggestion via rect -->
+            <rect width="120" height="100" fill="#c8a96e" opacity=".18" rx="4"/>
+            <!-- Ground line -->
+            <line x1="0" y1="82" x2="120" y2="82" stroke="#8b6914" stroke-width="1.5" opacity=".35"/>
+            <!-- Trunk — slightly leaning -->
+            <path d="M60 82 C60 82 59 72 59.5 62 C60 52 61 44 61 44" stroke="#7a5418" stroke-width="5" stroke-linecap="round"/>
+            <!-- Root flare -->
+            <path d="M60 82 C55 83 49 84 44 85" stroke="#7a5418" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M60 82 C65 83 71 84 76 85" stroke="#7a5418" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Main branches -->
+            <path d="M60 65 C52 62 40 59 28 59" stroke="#7a5418" stroke-width="3" stroke-linecap="round"/>
+            <path d="M60 63 C68 60 80 57 92 57" stroke="#7a5418" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M60.5 55 C56 52 48 49 38 48" stroke="#7a5418" stroke-width="2" stroke-linecap="round"/>
+            <path d="M60.5 54 C65 51 73 48 82 47" stroke="#7a5418" stroke-width="2" stroke-linecap="round"/>
+            <path d="M61 45 C57 42 51 40 43 39" stroke="#7a5418" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M61 45 C65 42 71 40 79 39" stroke="#7a5418" stroke-width="1.8" stroke-linecap="round"/>
+            <!-- Canopy — wide flat layers -->
+            <ellipse cx="27" cy="57" rx="12" ry="5" fill="#2d5a3d" opacity=".9"/>
+            <ellipse cx="42" cy="53" rx="13" ry="5.5" fill="#2d5a3d" opacity=".9"/>
+            <ellipse cx="55" cy="50" rx="11" ry="5" fill="#3d6b4e" opacity=".95"/>
+            <ellipse cx="68" cy="50" rx="11" ry="5" fill="#3d6b4e" opacity=".95"/>
+            <ellipse cx="81" cy="52" rx="12" ry="5" fill="#2d5a3d" opacity=".9"/>
+            <ellipse cx="93" cy="55" rx="10" ry="4.5" fill="#2d5a3d" opacity=".85"/>
+            <ellipse cx="38" cy="46" rx="12" ry="4.5" fill="#4a7c59" opacity=".95"/>
+            <ellipse cx="52" cy="43" rx="12" ry="5" fill="#4a7c59"/>
+            <ellipse cx="66" cy="43" rx="12" ry="5" fill="#4a7c59"/>
+            <ellipse cx="80" cy="45" rx="11" ry="4.5" fill="#4a7c59" opacity=".95"/>
+            <ellipse cx="47" cy="38" rx="11" ry="4" fill="#52875f"/>
+            <ellipse cx="60" cy="36" rx="13" ry="5" fill="#52875f"/>
+            <ellipse cx="73" cy="38" rx="11" ry="4" fill="#52875f"/>
+            <ellipse cx="60" cy="33" rx="16" ry="5.5" fill="#4a7c59"/>
+            <!-- Small animals suggestion — two dots on ground -->
+            <ellipse cx="35" cy="82" rx="4" ry="2" fill="#8b6914" opacity=".4"/>
+            <ellipse cx="88" cy="83" rx="3" ry="1.5" fill="#8b6914" opacity=".3"/>
+          </svg>
+        </div>
+        <div class="pfc-body">
+          <div class="pfc-icon">
+            <svg width="20" height="16" viewBox="0 0 26 20" fill="none">
+              <rect x="12" y="13" width="2" height="7" rx="1" fill="#c9b48a"/>
+              <line x1="13" y1="14" x2="6" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+              <line x1="13" y1="14" x2="20" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+              <line x1="13" y1="13" x2="13" y2="8" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+              <ellipse cx="4" cy="9" rx="4" ry="2.2" fill="#4a7c59"/>
+              <ellipse cx="13" cy="6" rx="5" ry="2.5" fill="#52875f"/>
+              <ellipse cx="22" cy="9" rx="4" ry="2.2" fill="#4a7c59"/>
+            </svg>
+          </div>
+          <div>
+            <div class="pfc-name">Rooibokkraal</div>
+            <div class="pfc-sub">Farm photos ↗</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- St Francis -->
+      <a class="photo-folder-card" href="https://drive.google.com/drive/folders/1iOG-uczBeUKF2HwEwNjeKSeVWAj0mcCa" target="_blank">
+        <div class="pfc-art pfc-stf">
+          <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="120" height="100" fill="#1a4e8c" opacity=".12" rx="4"/>
+            <!-- Sky -->
+            <rect width="120" height="58" fill="#87ceeb" opacity=".25"/>
+            <!-- Sun -->
+            <circle cx="95" cy="22" r="10" fill="#f59e0b" opacity=".7"/>
+            <!-- Distant horizon -->
+            <rect x="0" y="55" width="120" height="45" fill="#1a4e8c" opacity=".18"/>
+            <!-- Deep water -->
+            <ellipse cx="60" cy="75" rx="70" ry="20" fill="#1e4876" opacity=".35"/>
+            <!-- Wave 1 — back -->
+            <path d="M0 62 C15 55, 30 68, 45 62 C60 55, 75 68, 90 62 C105 55, 115 60, 120 62" stroke="#3a6fa8" stroke-width="2" fill="none" opacity=".5"/>
+            <!-- Wave 2 — mid -->
+            <path d="M0 70 C12 63, 25 74, 40 70 C55 63, 70 76, 85 70 C100 63, 112 68, 120 70" stroke="#3a6fa8" stroke-width="2.5" fill="none" opacity=".7"/>
+            <!-- Wave 3 — front with foam -->
+            <path d="M0 80 C10 72, 22 83, 36 78 C50 72, 65 85, 80 79 C95 72, 108 78, 120 80" stroke="#fff" stroke-width="3" fill="none" opacity=".6"/>
+            <!-- Surfboard in wave -->
+            <g transform="rotate(-18 60 68) translate(38 58)">
+              <rect x="0" y="0" width="8" height="26" rx="4" fill="#e84393" opacity=".9"/>
+              <rect x="2" y="2" width="4" height="10" rx="2" fill="#fff" opacity=".4"/>
+              <path d="M2 26 L4 30 L6 26Z" fill="#e84393" opacity=".9"/>
+            </g>
+            <!-- Surfer silhouette -->
+            <g transform="translate(52 52)">
+              <circle cx="5" cy="0" r="3" fill="#1e4876" opacity=".8"/>
+              <path d="M5 3 L3 10 L0 14" stroke="#1e4876" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+              <path d="M5 3 L7 10 L10 14" stroke="#1e4876" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+              <path d="M3 7 L0 9" stroke="#1e4876" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+              <path d="M7 7 L10 6" stroke="#1e4876" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+            </g>
+            <!-- Seagulls -->
+            <path d="M20 28 Q23 25 26 28" stroke="#1e4876" stroke-width="1.2" fill="none" opacity=".5"/>
+            <path d="M32 22 Q35 19 38 22" stroke="#1e4876" stroke-width="1.2" fill="none" opacity=".4"/>
+            <path d="M10 35 Q12 33 14 35" stroke="#1e4876" stroke-width="1" fill="none" opacity=".35"/>
+          </svg>
+        </div>
+        <div class="pfc-body">
+          <div class="pfc-icon">
+            <svg width="22" height="14" viewBox="0 0 30 20" fill="none">
+              <path d="M1 12 C4.5 7, 8 15, 11.5 12 C15 7, 18.5 15, 22 12 C25.5 7, 29 12, 29 12" stroke="#3a6fa8" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+              <path d="M3 16 C6 12.5, 9.5 17, 13 16 C16.5 12.5, 20 17, 23 16" stroke="#3a6fa8" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".45"/>
+            </svg>
+          </div>
+          <div>
+            <div class="pfc-name">St Francis</div>
+            <div class="pfc-sub">Beach photos ↗</div>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <div style="text-align:center;margin-top:16px">
+      <a href="https://drive.google.com/drive/folders/19SVsYlrcuKgYpMvNs4-Ro-cDivZoustV" target="_blank" class="btn btn-outline" style="font-size:.78rem">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Open main folder in Google Drive
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-date" id="sheetDate"></span>
+    <button class="sheet-close" onclick="closeSheet()">&#215;</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- BOOKING MODAL -->
+<div class="overlay" id="bookingOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="modalTitle">New Booking</span>
+      <button class="modal-close" onclick="closeBooking()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <div id="bookingAlerts"></div>
+      <div class="form-group">
+        <label class="form-label">Family Member</label>
+        <select class="form-control" id="bName"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Accommodation</label>
+        <div class="resource-grid">
+          <div class="resource-card" id="rcRooi" onclick="selAccomm('Rooibokkraal')">
+            <div class="rc-icon">
+              <svg width="30" height="24" viewBox="0 0 26 20" fill="none">
+                <rect x="12" y="13" width="2" height="7" rx="1" fill="#c9b48a"/>
+                <line x1="13" y1="14" x2="6" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="13" y1="14" x2="20" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="13" y1="13" x2="13" y2="8" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/>
+                <ellipse cx="4" cy="9" rx="4" ry="2.2" fill="#4a7c59"/>
+                <ellipse cx="13" cy="6" rx="5" ry="2.5" fill="#52875f"/>
+                <ellipse cx="22" cy="9" rx="4" ry="2.2" fill="#4a7c59"/>
+              </svg>
+            </div>
+            <div class="rc-label">Rooibokkraal<small>Farm stay</small></div>
+          </div>
+          <div class="resource-card" id="rcStf" onclick="selAccomm('St Francis')">
+            <div class="rc-icon">
+              <svg width="30" height="20" viewBox="0 0 30 20" fill="none">
+                <path d="M1 12 C4.5 7, 8 15, 11.5 12 C15 7, 18.5 15, 22 12 C25.5 7, 29 12, 29 12" stroke="#3a6fa8" stroke-width="2.3" stroke-linecap="round" fill="none"/>
+                <path d="M3 16 C6 12.5, 9.5 17, 13 16 C16.5 12.5, 20 17, 23 16" stroke="#3a6fa8" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".45"/>
+              </svg>
+            </div>
+            <div class="rc-label">St Francis<small>Beach stay</small></div>
+          </div>
+          <div class="resource-card full-width" id="rcNone" onclick="selAccomm('none')">
+            <div class="rc-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div class="rc-label">No accommodation<small>Land Cruiser only</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Land Cruiser</label>
+        <div class="lc-toggle" id="lcToggle" onclick="toggleLC()">
+          <div class="rc-icon">
+            <svg width="36" height="20" viewBox="0 0 36 20" fill="none">
+              <rect x="2" y="8" width="30" height="7" rx="1.5" fill="#b07d2e"/>
+              <path d="M7 8 L9.5 3 H25 L27 8 Z" fill="#b07d2e"/>
+              <path d="M10 8 L12 4.5 H23.5 L25 8 Z" fill="#7a5418" opacity=".45"/>
+              <circle cx="9" cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="9" cy="15.5" r="1.6" fill="#c9b48a"/>
+              <circle cx="27" cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="27" cy="15.5" r="1.6" fill="#c9b48a"/>
+              <rect x="10" y="2" width="16" height="1.2" rx=".6" fill="#c9b48a"/>
+              <circle cx="34.5" cy="11" r="2.8" fill="#3b2f1e"/><circle cx="34.5" cy="11" r="1.1" fill="#c9b48a"/>
+            </svg>
+          </div>
+          <div class="check-box" id="lcCheck"></div>
+          <div class="rc-label">Add Land Cruiser to booking</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dates</label>
+        <div class="date-row">
+          <div>
+            <label class="form-label" style="font-size:.65rem">Start Date</label>
+            <input type="date" class="form-control" id="bStart"/>
+          </div>
+          <div>
+            <label class="form-label" style="font-size:.65rem">End Date</label>
+            <input type="date" class="form-control" id="bEnd"/>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes <span style="font-weight:300;text-transform:none">(optional)</span></label>
+        <textarea class="form-control" id="bNotes" rows="2" placeholder="Any extra details…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeBooking()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitBooking()">Save Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- WHATSAPP MODAL -->
+<div class="overlay" id="waOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Share with the Family</span>
+      <button class="modal-close" onclick="closeWA()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <div class="wa-bubble" id="waText"></div>
+      <div class="wa-btns">
+        <button class="btn btn-copy" onclick="copyWA()">&#128203; Copy message</button>
+        <a class="btn btn-wa" id="waLink" href="#" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Open WhatsApp
+        </a>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeWA()">Done</button></div>
+  </div>
+</div>
+
+<!-- TASK MODAL -->
+<div class="overlay" id="taskOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="taskModalTitle">Add Task</span>
+      <button class="modal-close" onclick="closeTaskModal()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="taskModalId"/>
+      <div id="taskAlerts"></div>
+      <div class="form-group">
+        <label class="form-label">Task Name</label>
+        <input type="text" class="form-control" id="taskText" placeholder="e.g. Restock braai wood, Fix gate latch, Collect bikes…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes <span style="font-weight:300;text-transform:none">(optional)</span></label>
+        <textarea class="form-control" id="taskNotes" rows="3" placeholder="Any extra details, quantities, contacts, location specifics…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-control" id="taskCat">
+          <option value="Restock">Restock</option>
+          <option value="Repair">Repair</option>
+          <option value="Collect">Collect</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <select class="form-control" id="taskLoc">
+          <option value="Rooibokkraal">Rooibokkraal</option>
+          <option value="St Francis">St Francis</option>
+          <option value="Land Cruiser">Land Cruiser</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeTaskModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- IDENTITY MODAL — shown on first visit -->
+<div class="overlay" id="identityOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Welcome! Who are you?</span>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.88rem;color:var(--bark);margin-bottom:14px">Pick your name once — the app will remember you on this device.</p>
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <select class="form-control" id="identitySelect"></select>
+      </div>
+      <div id="identityAlert"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveIdentity()" style="width:100%">This is me ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PIN MODAL -->
+<div class="overlay" id="adminPinOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Admin PIN</span>
+      <button class="modal-close" onclick="closeAdminPin()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Enter PIN</label>
+        <input type="password" class="form-control" id="adminPinInput" placeholder="••••" maxlength="10"
+          onkeydown="if(event.key==='Enter')checkAdminPin()"/>
+      </div>
+      <div id="adminPinAlert"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeAdminPin()">Cancel</button>
+      <button class="btn btn-primary" onclick="checkAdminPin()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Admin</span>
+      <button class="modal-close" onclick="closeAdmin()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <label class="form-label">Family Members</label>
+      <div class="members-wrap" id="membersList"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <input type="text" class="form-control" id="newMember" placeholder="Add name…" style="flex:1" onkeydown="if(event.key==='Enter')addMember()"/>
+        <button class="btn btn-primary" onclick="addMember()">Add</button>
+      </div>
+      <div id="adminAlerts" style="margin-top:10px"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeAdmin()">Close</button></div>
+  </div>
+</div>
+
+<script>
+/* ── STATE ── */
+/* Pre-loaded existing bookings from the family spreadsheet */
+let bookings = [
+  /* ── APRIL–MAY 2026 ── */
+
+  /* Angus: Farm 30 Apr – 3 May (continuous run, merged into one booking) */
+  { id:'b-angus-farm', name:'Angus',  resources:['Rooibokkraal'],              start:'2026-04-30', end:'2026-05-03', notes:'', created:'' },
+
+  /* PJ: St Francis + Land Cruiser 19 Apr – 3 May (continuous run, merged) */
+  { id:'b-pj-apr-may', name:'PJ',     resources:['St Francis','Land Cruiser'], start:'2026-04-19', end:'2026-05-03', notes:'', created:'' },
+
+  /* Sue: Land Cruiser 6–10 May */
+  { id:'b-sue-lc-may', name:'Sue',    resources:['Land Cruiser'],              start:'2026-05-06', end:'2026-05-10', notes:'', created:'' },
+
+  /* ── JUNE 2026 ── */
+
+  /* PJ: Land Cruiser 10–12 Jun */
+  { id:'b-pj-lc-jun',       name:'PJ',     resources:['Land Cruiser'],                    start:'2026-06-10', end:'2026-06-12', notes:'', created:'' },
+
+  /* Robbie: St Francis + Land Cruiser 14–15 Jun */
+  { id:'b-robbie-stf',      name:'Robbie', resources:['St Francis','Land Cruiser'],        start:'2026-06-14', end:'2026-06-15', notes:'', created:'' },
+
+  /* Robbie: Land Cruiser only 16–17 Jun */
+  { id:'b-robbie-lc-1',     name:'Robbie', resources:['Land Cruiser'],                    start:'2026-06-16', end:'2026-06-17', notes:'', created:'' },
+
+  /* Robbie: Rooibokkraal + Land Cruiser 18–21 Jun */
+  { id:'b-robbie-farm',     name:'Robbie', resources:['Rooibokkraal','Land Cruiser'],      start:'2026-06-18', end:'2026-06-21', notes:'', created:'' },
+
+  /* Robbie: Land Cruiser only 22–24 Jun */
+  { id:'b-robbie-lc-2',     name:'Robbie', resources:['Land Cruiser'],                    start:'2026-06-22', end:'2026-06-24', notes:'', created:'' },
+];
+/* Family members — first names only, Gran for Gran */
+let members  = ['Gran','Sue','Chris','Erica','Stuart','PJ','Jen','Murray','SJ','Robyn','Angus','Megs','Anna','Nick','Robbie','William','Tom'];
+let currentYear  = 2026;
+let currentUser  = null;  // set on first visit, stored in localStorage
+let isAdmin      = false; // true after correct PIN entered
+const ADMIN_PIN  = 'Angoose1996'; // admin PIN
+let editingId    = null;
+let selAccommVal = null;
+let lcOn         = false;
+const MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS_S   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+/* ── STORAGE ──
+   Bookings save to localStorage so they persist on the same browser.
+   For shared access across the family, set USE_JSONBIN = true and add your keys.
+*/
+const SEED_VERSION = 'v5'; // bump this whenever seed bookings change — forces a fresh load
+const USE_JSONBIN = true;
+const JSONBIN_ID  = '69f07c59856a682189802b96';
+const JSONBIN_KEY = '$2a$10$tdr.Fo23VmaWbUebg5V3WOdwsEHAgoYlds1pdgPmPGmKRITSdZD1m';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+
+function loading(on){ document.getElementById('loadingBar').style.display = on?'block':'none'; }
+
+async function loadData(){
+  loading(true);
+  if(USE_JSONBIN){
+    try{
+      const r = await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
+      const j = await r.json();
+      bookings = j.record.bookings||[];
+      members  = j.record.members||members;
+      tasks    = j.record.tasks||[];
+      driveUrl = j.record.driveUrl||'';
+    }catch(e){ loadLocal(); }
+  } else { loadLocal(); }
+  loading(false);
+  populateSelects();
+  initIdentity(); /* Show identity picker AFTER members are loaded */
+  renderAll();
+}
+
+function loadLocal(){
+  const raw = localStorage.getItem('familyBookings');
+  if(raw){
+    const d=JSON.parse(raw);
+    /* If seed version changed, wipe stored data and use fresh seed */
+    if(d.seedVersion !== SEED_VERSION){
+      saveData(); // persist fresh seed
+      return;
+    }
+    const stored=d.bookings||[];
+    /* Keep pre-seeded bookings; merge in any user-added ones */
+    const preIds=bookings.map(b=>b.id);
+    const extras=stored.filter(b=>!preIds.includes(b.id));
+    bookings=[...bookings,...extras];
+    if(d.members&&d.members.length) members=d.members;
+    tasks    = d.tasks||[];
+    driveUrl = d.driveUrl||'';
+  }
+  saveData();
+}
+
+async function saveData(){
+  const payload={bookings,members,tasks,driveUrl,seedVersion:SEED_VERSION};
+  if(USE_JSONBIN){
+    try{ await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},body:JSON.stringify(payload)}); }catch(e){}
+  }
+  localStorage.setItem('familyBookings',JSON.stringify(payload));
+}
+
+/* ── VALIDATION ── */
+function overlap(s1,e1,s2,e2){ return s1<=e2 && e1>=s2; }
+
+function validate({name,resources,start,end},excludeId=null){
+  const errors=[],warnings=[];
+  let resolved=[...resources];
+  if(!name) errors.push('Please select a family member.');
+  if(!resources.length) errors.push('Please select at least one resource.');
+  if(start>end) errors.push('Start date must be before end date.');
+  if(errors.length) return {ok:false,errors};
+
+  const hasAccomm = resources.includes('Rooibokkraal')||resources.includes('St Francis');
+  const hasLC     = resources.includes('Land Cruiser');
+  const accomms   = resources.filter(r=>r!=='Land Cruiser');
+
+  if(hasAccomm){
+    const other = resources.includes('Rooibokkraal')?'St Francis':'Rooibokkraal';
+    const clash = bookings.find(b=>b.id!==excludeId&&b.name===name&&b.resources.includes(other)&&overlap(start,end,b.start,b.end));
+    if(clash){ errors.push(`${name} already has ${other} booked on overlapping dates.`); return {ok:false,errors}; }
+  }
+
+  for(const a of accomms){
+    const clash = bookings.find(b=>b.id!==excludeId&&b.resources.includes(a)&&overlap(start,end,b.start,b.end));
+    if(clash) errors.push(`${a} is already booked by ${clash.name} (${fmt(clash.start)} – ${fmt(clash.end)}).`);
+  }
+  if(errors.length) return {ok:false,errors};
+
+  if(hasLC){
+    const clash = bookings.find(b=>b.id!==excludeId&&b.resources.includes('Land Cruiser')&&overlap(start,end,b.start,b.end));
+    if(clash){
+      if(!hasAccomm){ errors.push(`Land Cruiser already booked by ${clash.name} (${fmt(clash.start)} – ${fmt(clash.end)}).`); return {ok:false,errors}; }
+      resolved=resolved.filter(r=>r!=='Land Cruiser');
+      warnings.push(`Land Cruiser unavailable — already booked by ${clash.name}. Removed from your booking.`);
+    }
+  }
+  return {ok:true,resolved,warnings};
+}
+
+/* ── RENDER ── */
+function renderAll(){ document.getElementById('yearLabel').textContent=currentYear; renderCalendar(); renderSummary(); }
+
+function getF(){ return {resource:document.getElementById('fResource').value,person:document.getElementById('fPerson').value,month:document.getElementById('fMonth').value}; }
+
+function filtered(){
+  const f=getF();
+  return bookings.filter(b=>{
+    if(f.resource&&!b.resources.includes(f.resource)) return false;
+    if(f.person&&b.name!==f.person) return false;
+    if(f.month!==''){
+      const ms=new Date(currentYear,+f.month,1).toISOString().slice(0,10);
+      const me=new Date(currentYear,+f.month+1,0).toISOString().slice(0,10);
+      if(b.end<ms||b.start>me) return false;
+    }
+    return true;
+  });
+}
+
+function renderCalendar(){
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  const f=getF();
+  const months=f.month!==''?[+f.month]:Array.from({length:12},(_,i)=>i);
+  const fb=filtered();
+  const todayStr=new Date().toISOString().slice(0,10);
+
+  months.forEach(m=>{
+    const card=document.createElement('div');
+    card.className='month-card';
+    const firstDay=new Date(currentYear,m,1).getDay();
+    const daysIn=new Date(currentYear,m+1,0).getDate();
+    let html=`<div class="month-header">${MONTHS[m]} ${currentYear}</div>
+      <div class="day-names">${DAYS_S.map(d=>`<div class="day-name">${d}</div>`).join('')}</div>
+      <div class="days-grid">`;
+    for(let i=0;i<firstDay;i++) html+='<div class="day-cell empty"></div>';
+    for(let d=1;d<=daysIn;d++){
+      const ds=`${currentYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isT=ds===todayStr;
+      const dayBs=fb.filter(b=>b.start<=ds&&b.end>=ds);
+      const chips=dayBs.flatMap(b=>b.resources.map(r=>{
+        const cls=r==='Rooibokkraal'?'rooi':r==='St Francis'?'stf':'lc';
+        return `<div class="day-chip chip-${cls}">${b.name}</div>`;
+      })).join('');
+      html+=`<div class="day-cell${isT?' today':''}" data-date="${ds}" data-has="${dayBs.length?1:0}"><div class="day-num">${d}</div>${chips}</div>`;
+    }
+    html+='</div>';
+    card.innerHTML=html;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('.day-cell[data-has="1"]').forEach(cell=>{
+    cell.addEventListener('click', e=>{
+      if(window.matchMedia('(hover:none)').matches){
+        /* Mobile — show bottom sheet */
+        showSheet(cell.dataset.date, filtered());
+      } else {
+        /* Desktop — tooltip handled by mouseenter */
+      }
+    });
+    cell.addEventListener('mouseenter',e=>{
+      if(!window.matchMedia('(hover:none)').matches)
+        showTip(e,cell.dataset.date,filtered());
+    });
+    cell.addEventListener('mouseleave',hideTip);
+  });
+  grid.querySelectorAll('.day-cell[data-has="0"]:not(.empty)').forEach(cell=>{
+    cell.addEventListener('click',()=>{ openBooking(); document.getElementById('bStart').value=cell.dataset.date; document.getElementById('bEnd').value=cell.dataset.date; });
+  });
+}
+
+function showTip(e,dateStr,fb){
+  const tip=document.getElementById('tooltip');
+  const dayBs=fb.filter(b=>b.start<=dateStr&&b.end>=dateStr);
+  if(!dayBs.length) return;
+  const d=new Date(dateStr+'T00:00:00');
+  let html=`<h4>${d.toLocaleDateString('en-ZA',{day:'numeric',month:'short'})}</h4>`;
+  dayBs.forEach(b=>{
+    const tags=b.resources.map(r=>{
+      const cls=r==='Rooibokkraal'?'tt-rooi':r==='St Francis'?'tt-stf':'tt-lc';
+      return `<span class="tip-tag ${cls}">${r}</span>`;
+    }).join('');
+    html+=`<div class="tip-booking"><span class="tip-name">${b.name}</span>${tags}${b.notes?`<br><em style="opacity:.7">${b.notes}</em>`:''}</div>`;
+  });
+  tip.innerHTML=html;
+  tip.style.display='block';
+  mv(e);
+  document.addEventListener('mousemove',mv);
+}
+function mv(e){ const t=document.getElementById('tooltip'); t.style.left=(e.clientX+14)+'px'; t.style.top=(e.clientY+14)+'px'; }
+function hideTip(){ document.getElementById('tooltip').style.display='none'; document.removeEventListener('mousemove',mv); }
+
+/* ── BOTTOM SHEET (mobile) ── */
+function showSheet(dateStr, fb){
+  const dayBs = fb.filter(b=>b.start<=dateStr&&b.end>=dateStr);
+  if(!dayBs.length) return;
+  const d = new Date(dateStr+'T00:00:00');
+  document.getElementById('sheetDate').textContent = d.toLocaleDateString('en-ZA',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('sheetBody').innerHTML = dayBs.map(b=>{
+    const tags = b.resources.map(r=>{
+      const cls = r==='Rooibokkraal'?'tag-rooi':r==='St Francis'?'tag-stf':'tag-lc';
+      const icon = r==='Rooibokkraal'?SVG_ROOI:r==='St Francis'?SVG_STF:SVG_LC;
+      return `<span class="res-tag ${cls}">${icon} ${r}</span>`;
+    }).join('');
+    return `<div class="sheet-booking">
+      <div style="flex:1">
+        <div class="sheet-booking-name">${b.name}</div>
+        <div class="sheet-tags">${tags}</div>
+        ${b.notes?`<div class="sheet-booking-notes">${b.notes}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('sheetOverlay').classList.add('open');
+  document.getElementById('bottomSheet').classList.add('open');
+}
+
+function closeSheet(){
+  document.getElementById('sheetOverlay').classList.remove('open');
+  document.getElementById('bottomSheet').classList.remove('open');
+}
+
+/* icon SVGs inline for tags */
+const SVG_ROOI=`<svg width="11" height="9" viewBox="0 0 26 20" fill="none"><rect x="12" y="13" width="2" height="7" rx="1" fill="#c9b48a"/><line x1="13" y1="14" x2="6" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/><line x1="13" y1="14" x2="20" y2="10" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/><line x1="13" y1="13" x2="13" y2="8" stroke="#c9b48a" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="4" cy="9" rx="4" ry="2.2" fill="#4a7c59"/><ellipse cx="13" cy="6" rx="5" ry="2.5" fill="#52875f"/><ellipse cx="22" cy="9" rx="4" ry="2.2" fill="#4a7c59"/></svg>`;
+const SVG_STF=`<svg width="14" height="9" viewBox="0 0 30 20" fill="none"><path d="M1 12 C4.5 7, 8 15, 11.5 12 C15 7, 18.5 15, 22 12 C25.5 7, 29 12, 29 12" stroke="#3a6fa8" stroke-width="2.3" stroke-linecap="round" fill="none"/></svg>`;
+const SVG_LC=`<svg width="16" height="9" viewBox="0 0 36 20" fill="none"><rect x="2" y="8" width="30" height="7" rx="1.5" fill="#b07d2e"/><path d="M7 8 L9.5 3 H25 L27 8 Z" fill="#b07d2e"/><circle cx="9" cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="9" cy="15.5" r="1.6" fill="#c9b48a"/><circle cx="27" cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="27" cy="15.5" r="1.6" fill="#c9b48a"/></svg>`;
+
+function renderSummary(){
+  const list=document.getElementById('bookingList');
+  const today=new Date().toISOString().slice(0,10);
+  const sorted=[...filtered()].sort((a,b)=>a.start.localeCompare(b.start));
+  if(!sorted.length){ list.innerHTML=`<div class="empty-state"><svg width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2" opacity=".4"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>No bookings yet.</p></div>`; return; }
+  list.innerHTML=sorted.map(b=>{
+    const past=b.end<today;
+    const tags=b.resources.map(r=>{
+      const cls=r==='Rooibokkraal'?'tag-rooi':r==='St Francis'?'tag-stf':'tag-lc';
+      const icon=r==='Rooibokkraal'?SVG_ROOI:r==='St Francis'?SVG_STF:SVG_LC;
+      return `<span class="res-tag ${cls}">${icon} ${r}</span>`;
+    }).join('');
+    /* Show edit/delete only to the booking owner or admin */
+    const canEdit = isAdmin || (currentUser && currentUser === b.name);
+    const actions = canEdit ? `<div class="bc-actions">
+        <button class="btn btn-outline btn-sm" onclick="openEdit('${b.id}')">&#9998; Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="delBooking('${b.id}')">Delete</button>
+      </div>` : '';
+    return `<div class="booking-card${past?' is-past':''}">
+      <div class="bc-name">${b.name}</div>
+      <div class="bc-dates">${fmt(b.start)} &rarr; ${fmt(b.end)}</div>
+      <div class="bc-tags">${tags}</div>
+      ${b.notes?`<div class="bc-notes">${b.notes}</div>`:''}
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
+/* ── BOOKING MODAL ── */
+function openBooking(id=null){
+  editingId=id; selAccommVal=null; lcOn=false;
+  document.getElementById('bookingAlerts').innerHTML='';
+  document.getElementById('bNotes').value='';
+  document.getElementById('bStart').value='';
+  document.getElementById('bEnd').value='';
+  updateResUI();
+  if(id){
+    const b=bookings.find(x=>x.id===id);
+    document.getElementById('modalTitle').textContent='Edit Booking';
+    document.getElementById('bName').value=b.name;
+    document.getElementById('bStart').value=b.start;
+    document.getElementById('bEnd').value=b.end;
+    document.getElementById('bNotes').value=b.notes||'';
+    selAccommVal=b.resources.includes('Rooibokkraal')?'Rooibokkraal':b.resources.includes('St Francis')?'St Francis':'none';
+    lcOn=b.resources.includes('Land Cruiser');
+    updateResUI();
+  } else { document.getElementById('modalTitle').textContent='New Booking'; }
+  document.getElementById('bookingOverlay').classList.add('open');
+}
+function openEdit(id){ openBooking(id); }
+function closeBooking(){ document.getElementById('bookingOverlay').classList.remove('open'); editingId=null; }
+
+function selAccomm(val){ selAccommVal=val; if(val==='none') lcOn=true; updateResUI(); }
+function toggleLC(){ if(selAccommVal==='none'&&lcOn) return; lcOn=!lcOn; updateResUI(); }
+
+function updateResUI(){
+  document.getElementById('rcRooi').className='resource-card';
+  document.getElementById('rcStf').className='resource-card';
+  document.getElementById('rcNone').className='resource-card full-width';
+  if(selAccommVal==='Rooibokkraal') document.getElementById('rcRooi').classList.add('sel-rooi');
+  else if(selAccommVal==='St Francis') document.getElementById('rcStf').classList.add('sel-stf');
+  else if(selAccommVal==='none') document.getElementById('rcNone').classList.add('sel-none');
+  const lt=document.getElementById('lcToggle'),lc=document.getElementById('lcCheck');
+  if(lcOn){lt.classList.add('sel-lc');lc.textContent='✓';}else{lt.classList.remove('sel-lc');lc.textContent='';}
+}
+
+async function submitBooking(){
+  const alerts=document.getElementById('bookingAlerts');
+  alerts.innerHTML='';
+  const name=document.getElementById('bName').value;
+  const start=document.getElementById('bStart').value;
+  const end=document.getElementById('bEnd').value;
+  const notes=document.getElementById('bNotes').value.trim();
+  if(!selAccommVal){ alerts.innerHTML='<div class="alert alert-error">Please choose an accommodation or select "No accommodation".</div>'; return; }
+  const resources=[];
+  if(selAccommVal==='Rooibokkraal') resources.push('Rooibokkraal');
+  if(selAccommVal==='St Francis') resources.push('St Francis');
+  if(lcOn) resources.push('Land Cruiser');
+  const result=validate({name,resources,start,end},editingId);
+  if(!result.ok){ alerts.innerHTML=result.errors.map(e=>`<div class="alert alert-error">&#9888; ${e}</div>`).join(''); return; }
+  if(result.warnings.length){ alerts.innerHTML=result.warnings.map(w=>`<div class="alert alert-warning">${w}</div>`).join(''); await new Promise(r=>setTimeout(r,700)); }
+  const booking={id:editingId||crypto.randomUUID(),name,notes,resources:result.resolved,start,end,created:new Date().toISOString()};
+  if(editingId){ const i=bookings.findIndex(b=>b.id===editingId); bookings[i]=booking; }
+  else bookings.push(booking);
+  await saveData();
+  closeBooking();
+  renderAll();
+  if(!editingId) showWA(booking);
+}
+
+async function delBooking(id){
+  if(!confirm('Delete this booking?')) return;
+  bookings=bookings.filter(b=>b.id!==id);
+  await saveData();
+  renderAll();
+}
+
+/* ── WHATSAPP ── */
+function generateWA(b){
+  const hasLC=b.resources.includes('Land Cruiser');
+  const accomm=b.resources.find(r=>r!=='Land Cruiser');
+  const s=fmt(b.start),e=fmt(b.end);
+  if(accomm&&hasLC)  return `Howzit chinnaaaas - I've booked ${accomm} from ${s} to ${e} (with the Land Cruiser). Please give a thumbs up if everyone is happy \uD83D\uDC4D`;
+  if(accomm&&!hasLC) return `Howzit chinnaaaas - I've booked ${accomm} from ${s} to ${e} (without the Land Cruiser). Please give a thumbs up if everyone is happy \uD83D\uDC4D`;
+  return `Howzit chinnaaaas - I've booked the Land Cruiser from ${s} to ${e}. Please give a thumbs up if everyone is happy \uD83D\uDC4D`;
+}
+function showWA(b){ const msg=generateWA(b); document.getElementById('waText').textContent=msg; document.getElementById('waLink').href=`https://wa.me/?text=${encodeURIComponent(msg)}`; document.getElementById('waOverlay').classList.add('open'); }
+function closeWA(){ document.getElementById('waOverlay').classList.remove('open'); }
+function copyWA(){
+  navigator.clipboard.writeText(document.getElementById('waText').textContent).then(()=>{
+    const btn=event.target.closest('button');
+    const orig=btn.innerHTML; btn.innerHTML='&#9989; Copied!'; setTimeout(()=>btn.innerHTML=orig,2000);
+  });
+}
+
+/* ── ADMIN ── */
+function openAdmin(){ renderMembers(); document.getElementById('adminOverlay').classList.add('open'); }
+function closeAdmin(){ document.getElementById('adminOverlay').classList.remove('open'); }
+function renderMembers(){ document.getElementById('membersList').innerHTML=members.map(m=>`<div class="member-pill">${m}<button onclick="removeMember('${m.replace(/'/g,"\\'")}')" title="Remove">&#215;</button></div>`).join(''); }
+async function addMember(){ const input=document.getElementById('newMember'),name=input.value.trim(); if(!name||members.includes(name)) return; members.push(name); input.value=''; await saveData(); renderMembers(); populateSelects(); }
+async function removeMember(name){ if(!confirm(`Remove ${name}?`)) return; members=members.filter(m=>m!==name); await saveData(); renderMembers(); populateSelects(); }
+
+/* ── IDENTITY ── */
+function populateIdentitySelect(){
+  const sel = document.getElementById('identitySelect');
+  sel.innerHTML = members.map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+
+function initIdentity(){
+  const stored = localStorage.getItem('familyUser');
+  if(stored && members.includes(stored)){
+    currentUser = stored;
+    updateUserBadge();
+    document.getElementById('identityOverlay').classList.remove('open');
+  } else {
+    populateIdentitySelect();
+    document.getElementById('identityOverlay').classList.add('open');
+  }
+}
+
+function saveIdentity(){
+  const name = document.getElementById('identitySelect').value;
+  if(!name) return;
+  currentUser = name;
+  localStorage.setItem('familyUser', name);
+  document.getElementById('identityOverlay').classList.remove('open');
+  updateUserBadge();
+  renderAll();
+}
+
+function updateUserBadge(){
+  const badge = document.getElementById('userBadge');
+  if(badge) badge.textContent = currentUser ? '👤 ' + currentUser : '👤';
+}
+
+function switchUser(){
+  if(!confirm('Switch to a different family member?')) return;
+  localStorage.removeItem('familyUser');
+  currentUser = null;
+  isAdmin = false;
+  updateUserBadge();
+  populateIdentitySelect();
+  document.getElementById('identityOverlay').classList.add('open');
+}
+
+/* ── TABS ── */
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='tasks') renderTasks();
+  if(id==='photos') renderPhotos();
+}
+
+/* ── TASKS ── */
+let tasks = [];
+
+async function loadTasks(){
+  /* Tasks are stored in JSONBin alongside bookings */
+  /* They are already loaded as part of loadData — see saveData/loadData */
+}
+
+function renderTasks(){
+  const list = document.getElementById('taskList');
+  const cat    = document.getElementById('tFilterCat').value;
+  const loc    = document.getElementById('tFilterLoc').value;
+  const status = document.getElementById('tFilterStatus').value;
+
+  let filtered = tasks.filter(t=>{
+    if(cat && t.category !== cat) return false;
+    if(loc && t.location !== loc) return false;
+    if(status==='open' && t.done) return false;
+    if(status==='done' && !t.done) return false;
+    return true;
+  });
+
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state"><svg width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2" opacity=".4"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><p>No tasks here.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(t=>{
+    const catCls = 'cat-'+t.category.toLowerCase();
+    const canEdit = isAdmin || (currentUser && currentUser === t.addedBy);
+    const actions = canEdit ? `
+      <div class="task-actions">
+        <button class="btn btn-outline btn-sm" onclick="openTaskModal('${t.id}')">&#9998;</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">&#215;</button>
+      </div>` : '';
+
+    /* Location icons */
+    const locIcon = t.location === 'Rooibokkraal'
+      /* Acacia flat-top silhouette */
+      ? `<svg width="18" height="16" viewBox="0 0 26 20" fill="none" style="vertical-align:middle">
+           <rect x="12" y="13" width="2" height="7" rx="1" fill="#c9b48a"/>
+           <line x1="13" y1="14" x2="6" y2="10" stroke="#c9b48a" stroke-width="1.2" stroke-linecap="round"/>
+           <line x1="13" y1="14" x2="20" y2="10" stroke="#c9b48a" stroke-width="1.2" stroke-linecap="round"/>
+           <line x1="13" y1="13" x2="13" y2="8" stroke="#c9b48a" stroke-width="1.2" stroke-linecap="round"/>
+           <ellipse cx="4"  cy="9" rx="4"   ry="2.2" fill="#4a7c59"/>
+           <ellipse cx="13" cy="6" rx="5"   ry="2.5" fill="#52875f"/>
+           <ellipse cx="22" cy="9" rx="4"   ry="2.2" fill="#4a7c59"/>
+         </svg>`
+      : t.location === 'St Francis'
+      /* Surfboard + wave */
+      ? `<svg width="22" height="16" viewBox="0 0 32 20" fill="none" style="vertical-align:middle">
+           <!-- wave -->
+           <path d="M1 13 C4.5 8, 8 16, 11.5 13 C15 8, 18.5 16, 22 13 C25.5 8, 29 13, 31 13" stroke="#3a6fa8" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+           <!-- surfboard -->
+           <ellipse cx="16" cy="7" rx="3" ry="6.5" rx="1.5" ry="5" transform="rotate(-30 16 7)" fill="#3a6fa8" rx="1.5" ry="5"/>
+           <path d="M11.5 3.5 Q16 1 20.5 4.5 Q18 10 13 11 Q10 7 11.5 3.5Z" fill="#3a6fa8" opacity="0.85"/>
+           <path d="M14 10.5 L13.2 12" stroke="#1e4876" stroke-width="1" stroke-linecap="round"/>
+         </svg>`
+      : t.location === 'Land Cruiser'
+      /* Land Rover silhouette */
+      ? `<svg width="22" height="14" viewBox="0 0 36 20" fill="none" style="vertical-align:middle">
+           <rect x="2" y="8" width="30" height="7" rx="1.5" fill="#b07d2e"/>
+           <path d="M7 8 L9.5 3 H25 L27 8 Z" fill="#b07d2e"/>
+           <path d="M10 8 L12 4.5 H23.5 L25 8 Z" fill="#7a5418" opacity=".45"/>
+           <circle cx="9"  cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="9"  cy="15.5" r="1.6" fill="#c9b48a"/>
+           <circle cx="27" cy="15.5" r="3.8" fill="#3b2f1e"/><circle cx="27" cy="15.5" r="1.6" fill="#c9b48a"/>
+           <rect x="10" y="2" width="16" height="1.2" rx=".6" fill="#c9b48a"/>
+           <circle cx="34.5" cy="11" r="2.8" fill="#3b2f1e"/><circle cx="34.5" cy="11" r="1.1" fill="#c9b48a"/>
+         </svg>`
+      /* General — compass rose */
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle">
+           <circle cx="12" cy="12" r="10" stroke="#888" stroke-width="1.5"/>
+           <polygon points="12,4 14,12 12,10 10,12" fill="#c0392b"/>
+           <polygon points="12,20 14,12 12,14 10,12" fill="#888"/>
+           <circle cx="12" cy="12" r="1.5" fill="#fff"/>
+         </svg>`;
+
+    return `<div class="task-card${t.done?' done':''}">
+      <div class="task-check${t.done?' checked':''}" onclick="toggleTask('${t.id}')">${t.done?'&#10003;':''}</div>
+      <div class="task-body">
+        <div class="task-text">${t.text}</div>
+        <div class="task-meta">
+          <span class="task-cat ${catCls}">${t.category}</span>
+          <span class="task-loc">${locIcon} ${t.location}</span>
+          <span class="task-by">Added by ${t.addedBy}</span>
+        </div>
+        ${t.notes?`<div class="bc-notes" style="margin-top:5px">${t.notes}</div>`:''}
+      </div>
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
+async function toggleTask(id){
+  const t = tasks.find(x=>x.id===id);
+  if(!t) return;
+  t.done = !t.done;
+  await saveData();
+  renderTasks();
+}
+
+async function deleteTask(id){
+  if(!confirm('Delete this task?')) return;
+  tasks = tasks.filter(t=>t.id!==id);
+  await saveData();
+  renderTasks();
+}
+
+function openTaskModal(id=null){
+  document.getElementById('taskAlerts').innerHTML='';
+  if(id){
+    const t=tasks.find(x=>x.id===id);
+    document.getElementById('taskModalTitle').textContent='Edit Task';
+    document.getElementById('taskText').value=t.text;
+    document.getElementById('taskNotes').value=t.notes||'';
+    document.getElementById('taskCat').value=t.category;
+    document.getElementById('taskLoc').value=t.location;
+    document.getElementById('taskModalId').value=id;
+  } else {
+    document.getElementById('taskModalTitle').textContent='Add Task';
+    document.getElementById('taskText').value='';
+    document.getElementById('taskNotes').value='';
+    document.getElementById('taskCat').value='General';
+    document.getElementById('taskLoc').value='Rooibokkraal';
+    document.getElementById('taskModalId').value='';
+  }
+  document.getElementById('taskOverlay').classList.add('open');
+}
+function closeTaskModal(){ document.getElementById('taskOverlay').classList.remove('open'); }
+
+async function submitTask(){
+  const text  = document.getElementById('taskText').value.trim();
+  const notes = document.getElementById('taskNotes').value.trim();
+  const cat   = document.getElementById('taskCat').value;
+  const loc   = document.getElementById('taskLoc').value;
+  const editId = document.getElementById('taskModalId').value;
+  if(!text){ document.getElementById('taskAlerts').innerHTML='<div class="alert alert-error">Please enter a task name.</div>'; return; }
+  if(editId){
+    const t=tasks.find(x=>x.id===editId);
+    t.text=text; t.notes=notes; t.category=cat; t.location=loc;
+  } else {
+    tasks.push({ id:crypto.randomUUID(), text, notes, category:cat, location:loc, addedBy:currentUser||'Unknown', done:false, created:new Date().toISOString() });
+  }
+  await saveData();
+  closeTaskModal();
+  renderTasks();
+}
+
+/* ── PHOTOS ── */
+let driveUrl = 'https://drive.google.com/embeddedfolderview?id=19SVsYlrcuKgYpMvNs4-Ro-cDivZoustV#grid';
+
+function renderPhotos(){
+  const wrap = document.getElementById('driveFrameWrap');
+  const placeholder = document.getElementById('drivePlaceholder');
+  const adminSetup = document.getElementById('driveSetupAdmin');
+
+  /* Show setup input to admin */
+  if(isAdmin) adminSetup.style.display='block';
+
+  if(driveUrl){
+    placeholder.style.display='none';
+    /* Remove any existing iframe */
+    const old = wrap.querySelector('iframe');
+    if(old) old.remove();
+    const iframe = document.createElement('iframe');
+    iframe.src = driveUrl;
+    iframe.allow = 'autoplay';
+    wrap.appendChild(iframe);
+    if(driveUrl) document.getElementById('driveUrlInput').value=driveUrl;
+  } else {
+    placeholder.style.display='block';
+  }
+}
+
+async function saveDriveUrl(){
+  const url = document.getElementById('driveUrlInput').value.trim();
+  if(!url) return;
+  driveUrl = url;
+  await saveData();
+  renderPhotos();
+}
+
+/* ── HELPERS ── */
+function fmt(ds){ return new Date(ds+'T00:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'}); }
+function populateSelects(){
+  const fp=document.getElementById('fPerson'),bn=document.getElementById('bName'),cur=fp.value;
+  fp.innerHTML='<option value="">All People</option>'+members.map(m=>`<option value="${m}">${m}</option>`).join('');
+  if(cur) fp.value=cur;
+  bn.innerHTML=members.map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+function changeYear(d){ currentYear+=d; renderAll(); }
+
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+
+/* Start the app — loadData fetches members first, then initIdentity runs */
+loadData();
+</script>
+</body>
+</html>
