@@ -229,6 +229,37 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
 .admin-drive-setup{background:var(--fog);border:1px solid var(--dust);border-radius:var(--r);padding:12px 14px;margin-top:12px;font-size:.83rem;color:var(--bark);line-height:1.6}
 .admin-drive-setup strong{color:var(--earth)}
 
+/* HERITAGE */
+.heritage-hero{position:relative;border-radius:var(--rl);overflow:hidden;margin-bottom:16px;height:180px;background:linear-gradient(160deg,#f5edd8,#e8dcc8)}
+.heritage-hero svg{position:absolute;inset:0;width:100%;height:100%}
+.heritage-hero-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.heritage-hero-title{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--earth);letter-spacing:.04em;text-shadow:0 1px 12px rgba(245,237,216,.8)}
+.heritage-hero-sub{font-size:.75rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--bark);margin-top:4px}
+.heritage-intro{background:#fff;border:1px solid var(--dust);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;font-size:.9rem;line-height:1.7;color:var(--bark);font-style:italic}
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:grid;grid-template-columns:72px 1fr;gap:0 16px;position:relative;padding-bottom:24px}
+.tl-item::before{content:'';position:absolute;left:35px;top:28px;bottom:0;width:2px;background:var(--dust)}
+.tl-item:last-child::before{display:none}
+.tl-year{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--sand);text-align:right;padding-top:2px;position:relative;z-index:1}
+.tl-content{background:#fff;border:1px solid var(--dust);border-radius:var(--r);padding:12px 14px;position:relative}
+.tl-content::before{content:'';position:absolute;left:-8px;top:10px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--sand)}
+.tl-heading{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--earth);margin-bottom:6px}
+.tl-content p{font-size:.85rem;line-height:1.7;color:var(--bark);margin-bottom:8px}
+.tl-content p:last-child{margin-bottom:0}
+.tl-link{display:inline-block;margin-top:8px;font-size:.78rem;font-weight:500;color:var(--rooi-mid);text-decoration:none;border-bottom:1px solid var(--rooi-bg);padding-bottom:1px;transition:color .15s,border-color .15s}
+.tl-link:hover{color:var(--rooi-dk);border-color:var(--rooi-mid)}
+.tl-content em{color:var(--bark);font-style:italic}
+.tl-highlight .tl-content{border-color:var(--sand);background:linear-gradient(135deg,#fffdf7,#fdf6e8)}
+.tl-highlight .tl-content::before{border-color:var(--lc-mid);background:var(--lc-mid)}
+.tl-highlight .tl-year{color:var(--lc-mid)}
+.tl-family .tl-content{border-color:var(--rooi-mid)}
+.tl-family .tl-content::before{border-color:var(--rooi-mid);background:var(--rooi-mid)}
+.tl-family-names{margin-top:12px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.tl-gen{background:var(--fog);border-radius:8px;padding:8px 12px;width:100%}
+.tl-gen-label{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--sand);margin-bottom:3px}
+.tl-gen-names{font-size:.82rem;color:var(--earth);line-height:1.5}
+.tl-gen-arrow{font-size:1rem;color:var(--dust);padding-left:12px}
+
 /* LOADING */
 .loading-bar{position:fixed;top:0;left:0;right:0;height:3px;background:var(--rooi-mid);z-index:9999;display:none;animation:loadAnim 1.2s ease infinite}
 @keyframes loadAnim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
@@ -304,9 +335,10 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
 
 <!-- TAB BAR (inside header area, below header) -->
 <nav class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('bookings',this)">&#128197; Bookings</button>
-  <button class="tab-btn" onclick="switchTab('tasks',this)">&#9989; Tasks</button>
-  <button class="tab-btn" onclick="switchTab('photos',this)">&#128247; Photos</button>
+  <button class="tab-btn active" onclick="switchTab('bookings',this)">Bookings</button>
+  <button class="tab-btn" onclick="switchTab('tasks',this)">Tasks</button>
+  <button class="tab-btn" onclick="switchTab('photos',this)">Photos</button>
+  <button class="tab-btn" onclick="switchTab('heritage',this)">Heritage</button>
 </nav>
 
 <div class="app">
@@ -539,6 +571,140 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
     </div>
   </div>
 
+  <!-- ══ HERITAGE TAB ══ -->
+  <div class="tab-pane" id="tab-heritage">
+
+    <div class="heritage-hero">
+      <svg viewBox="0 0 800 180" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <!-- Sky -->
+        <rect width="800" height="180" fill="#c8a96e" opacity=".25"/>
+        <!-- Ground -->
+        <rect x="0" y="140" width="800" height="40" fill="#8b6914" opacity=".2"/>
+        <!-- Rolling hills -->
+        <ellipse cx="150" cy="148" rx="200" ry="30" fill="#4a7c59" opacity=".3"/>
+        <ellipse cx="600" cy="152" rx="250" ry="28" fill="#3d6b4e" opacity=".25"/>
+        <!-- Left acacia -->
+        <path d="M80 145 C80 145 79 130 79.5 118 C80 106 81 99 81 99" stroke="#7a5418" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="60"  cy="98"  rx="18" ry="7" fill="#2d5a3d" opacity=".9"/>
+        <ellipse cx="78"  cy="93"  rx="20" ry="8" fill="#3d6b4e"/>
+        <ellipse cx="96"  cy="96"  rx="17" ry="7" fill="#2d5a3d" opacity=".9"/>
+        <ellipse cx="79"  cy="88"  rx="22" ry="8" fill="#4a7c59"/>
+        <ellipse cx="79"  cy="83"  rx="16" ry="6" fill="#52875f"/>
+        <!-- Right acacia -->
+        <path d="M700 148 C700 148 699 133 699.5 121 C700 109 701 102 701 102" stroke="#7a5418" stroke-width="3.5" stroke-linecap="round"/>
+        <ellipse cx="682" cy="101" rx="16" ry="6" fill="#2d5a3d" opacity=".9"/>
+        <ellipse cx="699" cy="96"  rx="19" ry="7" fill="#3d6b4e"/>
+        <ellipse cx="716" cy="99"  rx="15" ry="6" fill="#2d5a3d" opacity=".9"/>
+        <ellipse cx="699" cy="91"  rx="20" ry="7" fill="#4a7c59"/>
+        <ellipse cx="699" cy="86"  rx="14" ry="5" fill="#52875f"/>
+        <!-- Sun -->
+        <circle cx="400" cy="45" r="28" fill="#f59e0b" opacity=".35"/>
+        <!-- Animals (silhouette impala) -->
+        <ellipse cx="320" cy="143" rx="12" ry="5" fill="#5c4a32" opacity=".5"/>
+        <line x1="318" y1="138" x2="317" y2="130" stroke="#5c4a32" stroke-width="1.5" opacity=".5"/>
+        <line x1="322" y1="138" x2="323" y2="130" stroke="#5c4a32" stroke-width="1.5" opacity=".5"/>
+        <circle cx="318" cy="129" r="3.5" fill="#5c4a32" opacity=".5"/>
+        <ellipse cx="480" cy="145" rx="10" ry="4" fill="#5c4a32" opacity=".4"/>
+        <line x1="478" y1="141" x2="477" y2="134" stroke="#5c4a32" stroke-width="1.5" opacity=".4"/>
+        <line x1="482" y1="141" x2="483" y2="134" stroke="#5c4a32" stroke-width="1.5" opacity=".4"/>
+        <circle cx="477" cy="133" r="3" fill="#5c4a32" opacity=".4"/>
+      </svg>
+      <div class="heritage-hero-text">
+        <div class="heritage-hero-title">Rooibokkraal</div>
+        <div class="heritage-hero-sub">Est. 1953 · Crocodile River Valley · Limpopo</div>
+      </div>
+    </div>
+
+    <div class="heritage-intro">
+      <p>The land on which Rooibokkraal sits has been witness to some of the most significant chapters in South African history — from the first European explorers crossing the Crocodile River, to the great Boer republics, and finally into the hands of the Faber family in 1953. This is that story.</p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-year">1836</div>
+        <div class="tl-content">
+          <div class="tl-heading">Cornwallis Harris & the First Explorers</div>
+          <p>Captain William Cornwallis Harris arrived at the Cape in June 1836, invalided from the East India Company with fever. Rather than rest, he organised one of the great early hunting expeditions into the South African interior. His route took him across the Marico River and into the Magaliesberg — the same landscape that borders Rooibokkraal today.</p>
+          <p>It was on this expedition that Harris discovered the Sable Antelope, <em>later named the Harris Buck in his honour</em>, and produced detailed watercolour paintings that gave the world its first visual record of southern Africa's wildlife. His published account, <em>Wild Sports of Southern Africa</em> (1839), remains a classic of exploration literature.</p>
+          <a href="https://archive.org/details/wildsportsofsout00harr" target="_blank" class="tl-link">Read <em>Wild Sports of Southern Africa</em> free on Internet Archive ↗</a>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1834–36</div>
+        <div class="tl-content">
+          <div class="tl-heading">Dr Andrew Smith's Scientific Expedition</div>
+          <p>At nearly the same time, Dr Andrew Smith — Scottish surgeon, naturalist and founder of the South African Museum — led the <em>Expedition for Exploring Central Africa</em>. His party of scientists travelled north of the Orange River through the Marico region and down towards the Crocodile River, documenting flora, fauna and indigenous peoples with meticulous detail.</p>
+          <p>Smith's diary was eventually published by the Van Riebeeck Society in 1939. He met a young Charles Darwin in Cape Town in 1836 on Darwin's return from the Beagle voyage, and the two corresponded for years.</p>
+          <a href="https://hipsa.org.za/publication/the-diary-of-dr-andrew-smith-director-of-the-expedition-for-exploring-central-africa-1834-6-vol-i/" target="_blank" class="tl-link">Read about Dr Andrew Smith's Diary — HIPSA ↗</a>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1880s</div>
+        <div class="tl-content">
+          <div class="tl-heading">The ZAR, the Boers & the Land Survey</div>
+          <p>Following the First Boer War, the London Convention of 1884 established the boundaries of the Zuid-Afrikaansche Republiek (ZAR) and settled the Tswana territorial question — with Tswana communities being moved into the Bechuanaland Protectorate. This freed vast tracts of the western Transvaal lowveld for formal survey and sale.</p>
+          <p>The ZAR Volksraad sold surveyed farm portions to Burghers as reward and settlement. It was in this period that the farms of the Crocodile River valley — including the land that would become Rooibokkraal — were first formally registered.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1887</div>
+        <div class="tl-content">
+          <div class="tl-heading">Van Staaden & the Two Rivers Estate</div>
+          <p>In 1887, a man named Van Staaden acquired Rooibokkraal — the same year construction began on the Delagoa Bay Railway (the Pretoria–Maputo line), which would transform the lowveld economy. Around this time, the Transvaal and Delagoa Bay Land Company was acquiring multiple farms along the Crocodile River, consolidating them into what became known as the <em>Two Rivers Estate</em>.</p>
+        </div>
+      </div>
+
+      <div class="tl-item tl-highlight">
+        <div class="tl-year">1953</div>
+        <div class="tl-content">
+          <div class="tl-heading">EA Faber Buys Rooibokkraal — The Family Begins</div>
+          <p>In 1953, <strong>EA Faber</strong> purchased Rooibokkraal Portion 2 from Westerman. His intention was simple and enduring: to give his family a place to come to the bush — to be among the animals, to breathe the bushveld air, to step away from busy lives and reconnect with what matters. A place to disconnect, and to spend real time with family and friends.</p>
+          <p>It was the beginning of a family connection to this land that now spans over seventy years.</p>
+          <p>The farm sits in the Crocodile River valley, the same river that Harris had crossed over a century before, and the same landscape that Smith's scientists had documented in meticulous detail.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1955</div>
+        <div class="tl-content">
+          <div class="tl-heading">Growing the Land</div>
+          <p>EA Faber purchased Rooibokkraal Portion 1 from Ted Fair, consolidating the two portions of the original farm. In the same year, Krokodilsdraai and Buffelsdraai were bought from Wallice — expanding the family's foothold along the river that gives Krokodilsdraai its name.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1957</div>
+        <div class="tl-content">
+          <div class="tl-heading">Schwerin</div>
+          <p>The farm Schwerin was purchased from Dolf Erasmus, adding another piece to what was becoming a substantial family holding in the valley.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1959</div>
+        <div class="tl-content">
+          <div class="tl-heading">The Strip</div>
+          <p>The final piece — known simply as "the Strip" — was acquired in 1959, completing the assemblage of land that the family has stewarded ever since.</p>
+        </div>
+      </div>
+
+      <div class="tl-item tl-family">
+        <div class="tl-year">Today</div>
+        <div class="tl-content">
+          <div class="tl-heading">Four Generations, One Place</div>
+          <p>EA Faber's vision has held. Over seventy years on, the land remains in family hands — and the reason people come is still exactly what he intended. The bushveld. The animals. The silence. A fire at night, a sundowner at dusk, the kind of unhurried time that ordinary life rarely allows.</p>
+          <p>Three families — Faber, Charter and Jones — gather here across the seasons. Children who grew up on this land now bring their own children. The stories told around the fire are layered with decades of memory: the animals seen, the floods endured, the braais that lasted till dawn.</p>
+          <p>Rooibokkraal is not just a farm. It is the place the family returns to — the constant in a changing world, held together by the quiet understanding that some things are worth keeping.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
@@ -653,7 +819,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
     <div class="modal-body">
       <div class="wa-bubble" id="waText"></div>
       <div class="wa-btns">
-        <button class="btn btn-copy" onclick="copyWA()">&#128203; Copy message</button>
+        <button class="btn btn-copy" onclick="copyWA()">Copy message</button>
         <a class="btn btn-wa" id="waLink" href="#" target="_blank">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Open WhatsApp
@@ -1192,7 +1358,7 @@ function closeWA(){ document.getElementById('waOverlay').classList.remove('open'
 function copyWA(){
   navigator.clipboard.writeText(document.getElementById('waText').textContent).then(()=>{
     const btn=event.target.closest('button');
-    const orig=btn.innerHTML; btn.innerHTML='&#9989; Copied!'; setTimeout(()=>btn.innerHTML=orig,2000);
+    const orig=btn.innerHTML; btn.innerHTML='Copied!'; setTimeout(()=>btn.innerHTML=orig,2000);
   });
 }
 
