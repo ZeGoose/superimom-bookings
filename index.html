@@ -1036,55 +1036,38 @@ let lcOn         = false;
 const MONTHS   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS_S   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
-/* ── STORAGE ──
-   Bookings save to localStorage so they persist on the same browser.
-   For shared access across the family, set USE_JSONBIN = true and add your keys.
-*/
-const SEED_VERSION = 'v8'; // bump this whenever seed bookings change — forces a fresh load
-const USE_JSONBIN = true;
-const JSONBIN_ID  = '69f07c59856a682189802b96';
-const JSONBIN_KEY = '$2a$10$tdr.Fo23VmaWbUebg5V3WOdwsEHAgoYlds1pdgPmPGmKRITSdZD1m';
-const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+/* ── FIREBASE REALTIME DATABASE ────────────────────────────────────────────
+   Single source of truth. Each booking/task stored as individual record.
+   No more seed logic, no more merging, no more overwriting.
+──────────────────────────────────────────────────────────────────────────── */
+const FB_URL = 'https://superimom-booking-default-rtdb.europe-west1.firebasedatabase.app';
 
 function loading(on){ document.getElementById('loadingBar').style.display = on?'block':'none'; }
 
+/* ── READ all data from Firebase ── */
 async function loadData(){
   loading(true);
-  if(USE_JSONBIN){
-    try{
-      const r = await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
-      const j = await r.json();
-      const rec = j.record||{};
+  try {
+    const r = await fetch(`${FB_URL}/data.json`);
+    const d = await r.json();
+    if(d){
+      /* Use Firebase data if it exists */
+      bookings = d.bookings ? Object.values(d.bookings) : [];
+      members  = d.members  || members;
+      tasks    = d.tasks    ? Object.values(d.tasks) : [];
+      driveUrl = d.driveUrl || driveUrl;
 
-      /* JSONBin is the single source of truth.
-         Only seed it if it has never been written to (empty bookings array). */
-      if(rec.seeded && rec.seedVersion === SEED_VERSION){
-        /* JSONBin is up to date — use it exactly as-is */
-        bookings = rec.bookings||[];
-        members  = rec.members||members;
-        tasks    = rec.tasks||[];
-        driveUrl = rec.driveUrl||'';
-      } else {
-        /* Seed version changed — carefully merge:
-           1. Keep all seed bookings (by id)
-           2. Keep any user-added bookings not in seed
-           3. Write merged result back to JSONBin */
-        const existing  = rec.bookings||[];
-        const seedIds   = bookings.map(b=>b.id);
-        /* User-added = anything in JSONBin whose id is NOT a seed id */
-        const userAdded = existing.filter(b=>!seedIds.includes(b.id));
-        bookings = [...bookings, ...userAdded];
-        tasks    = rec.tasks||[];
-        driveUrl = rec.driveUrl||driveUrl;
-        if(rec.members&&rec.members.length) members = rec.members;
-        console.log('Seed updated to v8 — writing', bookings.length, 'bookings to JSONBin');
-        await saveData();
+      /* First time setup — if no bookings in Firebase, seed it */
+      if(bookings.length === 0){
+        await seedFirebase();
       }
-    }catch(e){
-      /* Network fail — fall back to localStorage so app still works offline */
-      loadLocal();
+    } else {
+      /* Database is empty — seed it */
+      await seedFirebase();
     }
-  } else {
+  } catch(e){
+    console.error('Firebase load error:', e);
+    /* Offline fallback */
     loadLocal();
   }
   loading(false);
@@ -1093,28 +1076,95 @@ async function loadData(){
   renderAll();
 }
 
-function loadLocal(){
-  /* Offline fallback only — not used when JSONBin is active */
-  const raw = localStorage.getItem('familyBookings');
-  if(raw){
-    const d=JSON.parse(raw);
-    bookings = d.bookings||bookings;
-    members  = d.members||members;
-    tasks    = d.tasks||[];
-    driveUrl = d.driveUrl||'';
+/* ── SEED Firebase with initial bookings (runs once ever) ── */
+async function seedFirebase(){
+  console.log('Seeding Firebase with initial bookings...');
+  for(const b of bookings){
+    await fetch(`${FB_URL}/data/bookings/${b.id}.json`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(b)
+    });
   }
+  await fetch(`${FB_URL}/data/members.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(members)
+  });
+  await fetch(`${FB_URL}/data/driveUrl.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(driveUrl)
+  });
 }
 
+/* ── SAVE a single booking to Firebase ── */
+async function saveBooking(booking){
+  await fetch(`${FB_URL}/data/bookings/${booking.id}.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(booking)
+  });
+  localStorage.setItem('familyBookings', JSON.stringify({bookings, members, tasks, driveUrl}));
+}
+
+/* ── DELETE a single booking from Firebase ── */
+async function deleteBookingFromDB(id){
+  await fetch(`${FB_URL}/data/bookings/${id}.json`, { method: 'DELETE' });
+  localStorage.setItem('familyBookings', JSON.stringify({bookings, members, tasks, driveUrl}));
+}
+
+/* ── SAVE a single task to Firebase ── */
+async function saveTask(task){
+  await fetch(`${FB_URL}/data/tasks/${task.id}.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(task)
+  });
+}
+
+/* ── DELETE a single task from Firebase ── */
+async function deleteTaskFromDB(id){
+  await fetch(`${FB_URL}/data/tasks/${id}.json`, { method: 'DELETE' });
+}
+
+/* ── SAVE members to Firebase ── */
+async function saveMembersToDB(){
+  await fetch(`${FB_URL}/data/members.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(members)
+  });
+}
+
+/* ── SAVE driveUrl to Firebase ── */
+async function saveDriveUrlToDB(){
+  await fetch(`${FB_URL}/data/driveUrl.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(driveUrl)
+  });
+}
+
+/* ── saveData: kept for compatibility, saves everything ── */
 async function saveData(){
-  /* Always mark as seeded so we never overwrite with defaults again */
-  const payload={bookings,members,tasks,driveUrl,seeded:true,seedVersion:SEED_VERSION};
-  if(USE_JSONBIN){
-    try{
-      await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},body:JSON.stringify(payload)});
-    }catch(e){}
+  await fetch(`${FB_URL}/data/members.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(members)
+  });
+  localStorage.setItem('familyBookings', JSON.stringify({bookings, members, tasks, driveUrl}));
+}
+
+function loadLocal(){
+  const raw = localStorage.getItem('familyBookings');
+  if(raw){
+    const d = JSON.parse(raw);
+    bookings = d.bookings || bookings;
+    members  = d.members  || members;
+    tasks    = d.tasks    || [];
+    driveUrl = d.driveUrl || driveUrl;
   }
-  /* Also cache locally as offline fallback */
-  localStorage.setItem('familyBookings',JSON.stringify(payload));
 }
 
 /* ── VALIDATION ── */
@@ -1365,7 +1415,7 @@ async function submitBooking(){
   const booking={id:editingId||crypto.randomUUID(),name,notes,resources:result.resolved,start,end,created:new Date().toISOString()};
   if(editingId){ const i=bookings.findIndex(b=>b.id===editingId); bookings[i]=booking; }
   else bookings.push(booking);
-  await saveData();
+  await saveBooking(booking);
   closeBooking();
   renderAll();
   if(!editingId) showWA(booking);
@@ -1374,7 +1424,7 @@ async function submitBooking(){
 async function delBooking(id){
   if(!confirm('Delete this booking?')) return;
   bookings=bookings.filter(b=>b.id!==id);
-  await saveData();
+  await deleteBookingFromDB(id);
   renderAll();
 }
 
@@ -1400,8 +1450,8 @@ function copyWA(){
 function openAdmin(){ renderMembers(); document.getElementById('adminOverlay').classList.add('open'); }
 function closeAdmin(){ document.getElementById('adminOverlay').classList.remove('open'); }
 function renderMembers(){ document.getElementById('membersList').innerHTML=members.map(m=>`<div class="member-pill">${m}<button onclick="removeMember('${m.replace(/'/g,"\\'")}')" title="Remove">&#215;</button></div>`).join(''); }
-async function addMember(){ const input=document.getElementById('newMember'),name=input.value.trim(); if(!name||members.includes(name)) return; members.push(name); input.value=''; await saveData(); renderMembers(); populateSelects(); }
-async function removeMember(name){ if(!confirm(`Remove ${name}?`)) return; members=members.filter(m=>m!==name); await saveData(); renderMembers(); populateSelects(); }
+async function addMember(){ const input=document.getElementById('newMember'),name=input.value.trim(); if(!name||members.includes(name)) return; members.push(name); input.value=''; await saveMembersToDB(); renderMembers(); populateSelects(); }
+async function removeMember(name){ if(!confirm(`Remove ${name}?`)) return; members=members.filter(m=>m!==name); await saveMembersToDB(); renderMembers(); populateSelects(); }
 
 /* ── IDENTITY ── */
 function populateIdentitySelect(){
@@ -1553,14 +1603,14 @@ async function toggleTask(id){
   const t = tasks.find(x=>x.id===id);
   if(!t) return;
   t.done = !t.done;
-  await saveData();
+  await saveTask(t);
   renderTasks();
 }
 
 async function deleteTask(id){
   if(!confirm('Delete this task?')) return;
   tasks = tasks.filter(t=>t.id!==id);
-  await saveData();
+  await deleteTaskFromDB(id);
   renderTasks();
 }
 
@@ -1596,10 +1646,12 @@ async function submitTask(){
   if(editId){
     const t=tasks.find(x=>x.id===editId);
     t.text=text; t.notes=notes; t.category=cat; t.location=loc;
+    await saveTask(t);
   } else {
-    tasks.push({ id:crypto.randomUUID(), text, notes, category:cat, location:loc, addedBy:currentUser||'Unknown', done:false, created:new Date().toISOString() });
+    const task={ id:crypto.randomUUID(), text, notes, category:cat, location:loc, addedBy:currentUser||'Unknown', done:false, created:new Date().toISOString() };
+    tasks.push(task);
+    await saveTask(task);
   }
-  await saveData();
   closeTaskModal();
   renderTasks();
 }
@@ -1634,7 +1686,7 @@ async function saveDriveUrl(){
   const url = document.getElementById('driveUrlInput').value.trim();
   if(!url) return;
   driveUrl = url;
-  await saveData();
+  await saveDriveUrlToDB();
   renderPhotos();
 }
 
