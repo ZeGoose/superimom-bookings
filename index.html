@@ -1010,6 +1010,9 @@ let bookings = [
 
   /* Robbie: Land Cruiser only 22–24 Jun */
   { id:'b-robbie-lc-2',     name:'Robbie', resources:['Land Cruiser'],                    start:'2026-06-22', end:'2026-06-24', notes:'', created:'' },
+
+  /* Gran: Land Cruiser 29 May – 7 Jun */
+  { id:'b-gran-lc-may-jun', name:'Gran',   resources:['Land Cruiser'],                    start:'2026-05-29', end:'2026-06-07', notes:'', created:'' },
 ];
 /* Family members — first names only, Gran for Gran */
 let members  = ['Gran','Sue','Chris','Erica','Stuart','PJ','Jen','Murray','SJ','Robyn','Angus','Megs','Anna','Nick','Robbie','William','Tom'];
@@ -1028,7 +1031,7 @@ const DAYS_S   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
    Bookings save to localStorage so they persist on the same browser.
    For shared access across the family, set USE_JSONBIN = true and add your keys.
 */
-const SEED_VERSION = 'v5'; // bump this whenever seed bookings change — forces a fresh load
+const SEED_VERSION = 'v7'; // bump this whenever seed bookings change — forces a fresh load
 const USE_JSONBIN = true;
 const JSONBIN_ID  = '69f07c59856a682189802b96';
 const JSONBIN_KEY = '$2a$10$tdr.Fo23VmaWbUebg5V3WOdwsEHAgoYlds1pdgPmPGmKRITSdZD1m';
@@ -1042,44 +1045,62 @@ async function loadData(){
     try{
       const r = await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}});
       const j = await r.json();
-      bookings = j.record.bookings||[];
-      members  = j.record.members||members;
-      tasks    = j.record.tasks||[];
-      driveUrl = j.record.driveUrl||'';
-    }catch(e){ loadLocal(); }
-  } else { loadLocal(); }
+      const rec = j.record||{};
+
+      /* JSONBin is the single source of truth.
+         Only seed it if it has never been written to (empty bookings array). */
+      if(rec.seeded && rec.seedVersion === SEED_VERSION){
+        /* JSONBin is up to date — use it exactly as-is */
+        bookings = rec.bookings||[];
+        members  = rec.members||members;
+        tasks    = rec.tasks||[];
+        driveUrl = rec.driveUrl||'';
+      } else {
+        /* Seed version changed or never seeded — merge any real user bookings
+           with the updated seed, then write back to JSONBin */
+        const existing = rec.bookings||[];
+        const seedIds  = bookings.map(b=>b.id);
+        const userAdded = existing.filter(b=>!seedIds.includes(b.id));
+        bookings = [...bookings, ...userAdded];
+        tasks    = rec.tasks||[];
+        driveUrl = rec.driveUrl||driveUrl;
+        if(rec.members&&rec.members.length) members = rec.members;
+        await saveData();
+      }
+    }catch(e){
+      /* Network fail — fall back to localStorage so app still works offline */
+      loadLocal();
+    }
+  } else {
+    loadLocal();
+  }
   loading(false);
   populateSelects();
-  initIdentity(); /* Show identity picker AFTER members are loaded */
+  initIdentity();
   renderAll();
 }
 
 function loadLocal(){
+  /* Offline fallback only — not used when JSONBin is active */
   const raw = localStorage.getItem('familyBookings');
   if(raw){
     const d=JSON.parse(raw);
-    /* If seed version changed, wipe stored data and use fresh seed */
-    if(d.seedVersion !== SEED_VERSION){
-      saveData(); // persist fresh seed
-      return;
-    }
-    const stored=d.bookings||[];
-    /* Keep pre-seeded bookings; merge in any user-added ones */
-    const preIds=bookings.map(b=>b.id);
-    const extras=stored.filter(b=>!preIds.includes(b.id));
-    bookings=[...bookings,...extras];
-    if(d.members&&d.members.length) members=d.members;
+    bookings = d.bookings||bookings;
+    members  = d.members||members;
     tasks    = d.tasks||[];
     driveUrl = d.driveUrl||'';
   }
-  saveData();
 }
 
 async function saveData(){
-  const payload={bookings,members,tasks,driveUrl,seedVersion:SEED_VERSION};
+  /* Always mark as seeded so we never overwrite with defaults again */
+  const payload={bookings,members,tasks,driveUrl,seeded:true,seedVersion:SEED_VERSION};
   if(USE_JSONBIN){
-    try{ await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},body:JSON.stringify(payload)}); }catch(e){}
+    try{
+      await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},body:JSON.stringify(payload)});
+    }catch(e){}
   }
+  /* Also cache locally as offline fallback */
   localStorage.setItem('familyBookings',JSON.stringify(payload));
 }
 
