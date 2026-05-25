@@ -642,6 +642,15 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
       </div>
 
       <div class="tl-item">
+        <div class="tl-year">1870s</div>
+        <div class="tl-content">
+          <div class="tl-heading">Frederick Selous — The Greatest Hunter</div>
+          <p>Frederick Courteney Selous — British explorer, hunter and conservationist — made his early reputation in this very region. He first arrived in southern Africa at age 19 and spent years hunting along the Limpopo and Marico systems. Local hunters near Rooibokkraal describe the area as one of the finest hunting grounds Selous ever visited, a reputation that drew adventurers from across the British Empire.</p>
+          <p>Selous's real-life exploits inspired Sir H. Rider Haggard to create Allan Quatermain — the fictional hero of <em>King Solomon's Mines</em>. He was friends with Theodore Roosevelt and Cecil Rhodes, and in 1893 was awarded the Founder's Medal of the Royal Geographical Society.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
         <div class="tl-year">1880s</div>
         <div class="tl-content">
           <div class="tl-heading">The ZAR, the Boers & the Land Survey</div>
@@ -664,7 +673,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
           <div class="tl-heading">EA Faber Buys Rooibokkraal — The Family Begins</div>
           <p>In 1953, <strong>EA Faber</strong> purchased Rooibokkraal Portion 2 from Westerman. His intention was simple and enduring: to give his family a place to come to the bush — to be among the animals, to breathe the bushveld air, to step away from busy lives and reconnect with what matters. A place to disconnect, and to spend real time with family and friends.</p>
           <p>It was the beginning of a family connection to this land that now spans over seventy years.</p>
-          <p>The farm sits in the Crocodile River valley, the same river that Harris had crossed over a century before, and the same landscape that Smith's scientists had documented in meticulous detail.</p>
+          <p>The farm sits in the Crocodile River valley, the same river that Harris and Selous had crossed over a century before, and the same landscape that Smith's scientists had documented in meticulous detail.</p>
         </div>
       </div>
 
@@ -672,7 +681,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-year">1955</div>
         <div class="tl-content">
           <div class="tl-heading">Growing the Land</div>
-          <p>EA Faber purchased Rooibokkraal Portion 1 from Ted Fair, consolidating the two portions of the original farm. In the same year, Krokodilsdraai and Buffelsdraai were bought from Wallice — expanding the family's foothold along the river that gives Krokodilsdraai its name.</p>
+          <p>EA Faber purchased Rooibokkraal Portion 1 from Ted Fair, consolidating the two portions of the original farm. In the same year, Krokodilsdraai and Buffelsdraai were bought from Wallace — expanding the family's foothold along the river that gives Krokodilsdraai its name.</p>
         </div>
       </div>
 
@@ -1031,7 +1040,7 @@ const DAYS_S   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
    Bookings save to localStorage so they persist on the same browser.
    For shared access across the family, set USE_JSONBIN = true and add your keys.
 */
-const SEED_VERSION = 'v7'; // bump this whenever seed bookings change — forces a fresh load
+const SEED_VERSION = 'v8'; // bump this whenever seed bookings change — forces a fresh load
 const USE_JSONBIN = true;
 const JSONBIN_ID  = '69f07c59856a682189802b96';
 const JSONBIN_KEY = '$2a$10$tdr.Fo23VmaWbUebg5V3WOdwsEHAgoYlds1pdgPmPGmKRITSdZD1m';
@@ -1056,15 +1065,19 @@ async function loadData(){
         tasks    = rec.tasks||[];
         driveUrl = rec.driveUrl||'';
       } else {
-        /* Seed version changed or never seeded — merge any real user bookings
-           with the updated seed, then write back to JSONBin */
-        const existing = rec.bookings||[];
-        const seedIds  = bookings.map(b=>b.id);
+        /* Seed version changed — carefully merge:
+           1. Keep all seed bookings (by id)
+           2. Keep any user-added bookings not in seed
+           3. Write merged result back to JSONBin */
+        const existing  = rec.bookings||[];
+        const seedIds   = bookings.map(b=>b.id);
+        /* User-added = anything in JSONBin whose id is NOT a seed id */
         const userAdded = existing.filter(b=>!seedIds.includes(b.id));
         bookings = [...bookings, ...userAdded];
         tasks    = rec.tasks||[];
         driveUrl = rec.driveUrl||driveUrl;
         if(rec.members&&rec.members.length) members = rec.members;
+        console.log('Seed updated to v8 — writing', bookings.length, 'bookings to JSONBin');
         await saveData();
       }
     }catch(e){
