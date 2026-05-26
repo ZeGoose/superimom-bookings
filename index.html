@@ -229,6 +229,28 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
 .admin-drive-setup{background:var(--fog);border:1px solid var(--dust);border-radius:var(--r);padding:12px 14px;margin-top:12px;font-size:.83rem;color:var(--bark);line-height:1.6}
 .admin-drive-setup strong{color:var(--earth)}
 
+/* DID YOU KNOW — expandable list */
+.dyk-section{margin-top:20px}
+.dyk-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:var(--earth);margin-bottom:10px;padding-left:2px}
+.dyk-list{display:flex;flex-direction:column;gap:6px}
+.dyk-item{background:#fff;border:1px solid var(--dust);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:box-shadow .15s}
+.dyk-item:hover{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.dyk-item.open{border-color:var(--sand)}
+.dyk-header{display:flex;align-items:center;gap:10px;padding:11px 14px;user-select:none}
+.dyk-icon{font-size:1.2rem;flex-shrink:0;line-height:1}
+.dyk-summary{flex:1;font-size:.88rem;font-weight:500;color:var(--earth)}
+.dyk-chevron{font-size:.7rem;color:var(--sand);flex-shrink:0;transition:transform .2s}
+.dyk-item.open .dyk-chevron{transform:rotate(180deg)}
+.dyk-body{display:none;padding:0 14px 12px 42px;font-size:.83rem;line-height:1.7;color:var(--bark);border-top:1px solid var(--dust);padding-top:10px}
+.dyk-item.open .dyk-body{display:block}
+.dyk-body em{color:var(--earth);font-style:italic}
+/* Desktop: reveal on hover too */
+@media(hover:hover){
+  .dyk-item:hover .dyk-body{display:block}
+  .dyk-item:hover{border-color:var(--sand)}
+  .dyk-item:hover .dyk-chevron{transform:rotate(180deg)}
+}
+
 /* HERITAGE */
 .heritage-hero{position:relative;border-radius:var(--rl);overflow:hidden;margin-bottom:16px;height:180px;background:linear-gradient(160deg,#f5edd8,#e8dcc8)}
 .heritage-hero svg{position:absolute;inset:0;width:100%;height:100%}
@@ -616,7 +638,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
     </div>
 
     <div class="heritage-intro">
-      <p>The land on which Rooibokkraal sits has been witness to some of the most significant chapters in South African history — from the first European explorers crossing the Crocodile River, to the great Boer republics, and finally into the hands of the Faber family in 1953. This is that story.</p>
+      <p>The land on which Rooibokkraal sits has been witness to some of the most significant chapters in South African history — from the first European explorers to cross the Crocodile River, to the great Boer republics, and finally into the hands of the Faber family in 1953. A 1966 article in the <em>South African Journal of Science</em> places the farm by name at the very point where the Limpopo begins. This is that story.</p>
     </div>
 
     <div class="timeline">
@@ -624,9 +646,9 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
       <div class="tl-item">
         <div class="tl-year">1836</div>
         <div class="tl-content">
-          <div class="tl-heading">Cornwallis Harris & the First Explorers</div>
-          <p>Captain William Cornwallis Harris arrived at the Cape in June 1836, invalided from the East India Company with fever. Rather than rest, he organised one of the great early hunting expeditions into the South African interior. His route took him across the Marico River and into the Magaliesberg — the same landscape that borders Rooibokkraal today.</p>
-          <p>It was on this expedition that Harris discovered the Sable Antelope, <em>later named the Harris Buck in his honour</em>, and produced detailed watercolour paintings that gave the world its first visual record of southern Africa's wildlife. His published account, <em>Wild Sports of Southern Africa</em> (1839), remains a classic of exploration literature.</p>
+          <div class="tl-heading">Cornwallis Harris Crosses the Crocodile</div>
+          <p>Captain William Cornwallis Harris arrived at the Cape in June 1836, invalided from the East India Company with fever. He met Dr Andrew Smith — who had just returned from exploring the very region around Rooibokkraal — and used his knowledge to plan a hunting expedition north through the Marico and Crocodile River system.</p>
+          <p>Harris discovered the Sable Antelope on this journey, <em>later named the Harris Buck in his honour</em>, and produced detailed watercolour paintings that gave the world its first visual record of southern Africa's wildlife. His account <em>Wild Sports of Southern Africa</em> (1839) remains a classic of exploration literature.</p>
           <a href="https://archive.org/details/wildsportsofsout00harr" target="_blank" class="tl-link">Read <em>Wild Sports of Southern Africa</em> free on Internet Archive ↗</a>
         </div>
       </div>
@@ -635,8 +657,8 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-year">1834–36</div>
         <div class="tl-content">
           <div class="tl-heading">Dr Andrew Smith's Scientific Expedition</div>
-          <p>At nearly the same time, Dr Andrew Smith — Scottish surgeon, naturalist and founder of the South African Museum — led the <em>Expedition for Exploring Central Africa</em>. His party of scientists travelled north of the Orange River through the Marico region and down towards the Crocodile River, documenting flora, fauna and indigenous peoples with meticulous detail.</p>
-          <p>Smith's diary was eventually published by the Van Riebeeck Society in 1939. He met a young Charles Darwin in Cape Town in 1836 on Darwin's return from the Beagle voyage, and the two corresponded for years.</p>
+          <p>Dr Andrew Smith — Scottish surgeon, naturalist and founder of the South African Museum — led the <em>Expedition for Exploring Central Africa</em> through the Marico region and down towards the Crocodile River, documenting the flora, fauna and peoples of the area that would become Rooibokkraal with meticulous precision. It was Smith who first briefed Harris on the route north.</p>
+          <p>Smith's diary was published by the Van Riebeeck Society in 1939. He met Charles Darwin at the Cape in 1836 on Darwin's return from the Beagle voyage — two of the greatest naturalists of the age, comparing notes on the same landscape.</p>
           <a href="https://hipsa.org.za/publication/the-diary-of-dr-andrew-smith-director-of-the-expedition-for-exploring-central-africa-1834-6-vol-i/" target="_blank" class="tl-link">Read about Dr Andrew Smith's Diary — HIPSA ↗</a>
         </div>
       </div>
@@ -645,8 +667,8 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-year">1870s</div>
         <div class="tl-content">
           <div class="tl-heading">Frederick Selous — The Greatest Hunter</div>
-          <p>Frederick Courteney Selous — British explorer, hunter and conservationist — made his early reputation in this very region. He first arrived in southern Africa at age 19 and spent years hunting along the Limpopo and Marico systems. Local hunters near Rooibokkraal describe the area as one of the finest hunting grounds Selous ever visited, a reputation that drew adventurers from across the British Empire.</p>
-          <p>Selous's real-life exploits inspired Sir H. Rider Haggard to create Allan Quatermain — the fictional hero of <em>King Solomon's Mines</em>. He was friends with Theodore Roosevelt and Cecil Rhodes, and in 1893 was awarded the Founder's Medal of the Royal Geographical Society.</p>
+          <p>Frederick Courteney Selous spent years hunting along the Limpopo and Marico river systems — the very rivers that border Rooibokkraal. He declared this area the finest hunting ground he had ever seen. US President Theodore Roosevelt later wrote of him: <em>"Mr Selous is the last of the mighty hunters whose experience lay in the greatest hunting ground which this world has seen since civilised man has appeared."</em></p>
+          <p>Selous's exploits along these rivers directly inspired Sir H. Rider Haggard to create Allan Quatermain — the fictional hero of <em>King Solomon's Mines</em>. In 1893 Selous was awarded the Founder's Medal of the Royal Geographical Society.</p>
         </div>
       </div>
 
@@ -654,8 +676,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-year">1880s</div>
         <div class="tl-content">
           <div class="tl-heading">The ZAR, the Boers & the Land Survey</div>
-          <p>Following the First Boer War, the London Convention of 1884 established the boundaries of the Zuid-Afrikaansche Republiek (ZAR) and settled the Tswana territorial question — with Tswana communities being moved into the Bechuanaland Protectorate. This freed vast tracts of the western Transvaal lowveld for formal survey and sale.</p>
-          <p>The ZAR Volksraad sold surveyed farm portions to Burghers as reward and settlement. It was in this period that the farms of the Crocodile River valley — including the land that would become Rooibokkraal — were first formally registered.</p>
+          <p>Following the First Boer War, the London Convention of 1884 established the boundaries of the Zuid-Afrikaansche Republiek (ZAR) and settled the Tswana territorial question — with Tswana communities being moved into the Bechuanaland Protectorate. This freed the farms of the Crocodile River valley for formal survey and sale by the ZAR Volksraad to Burghers. It was in this period that the land that would become Rooibokkraal was first formally registered.</p>
         </div>
       </div>
 
@@ -663,7 +684,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-year">1887</div>
         <div class="tl-content">
           <div class="tl-heading">Van Staaden & the Two Rivers Estate</div>
-          <p>In 1887, a man named Van Staaden acquired Rooibokkraal — the same year construction began on the Delagoa Bay Railway (the Pretoria–Maputo line), which would transform the lowveld economy. Around this time, the Transvaal and Delagoa Bay Land Company was acquiring multiple farms along the Crocodile River, consolidating them into what became known as the <em>Two Rivers Estate</em>.</p>
+          <p>In 1887, Van Staaden acquired Rooibokkraal — the same year construction began on the Delagoa Bay Railway (the Pretoria–Maputo line), which would transform the lowveld economy. Around this time, the Transvaal and Delagoa Bay Land Company was consolidating multiple farms along the Crocodile River into what became known as the <em>Two Rivers Estate</em> — named for the two rivers whose meeting, just beyond the farm boundary, creates the Limpopo.</p>
         </div>
       </div>
 
@@ -672,8 +693,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-content">
           <div class="tl-heading">EA Faber Buys Rooibokkraal — The Family Begins</div>
           <p>In 1953, <strong>EA Faber</strong> purchased Rooibokkraal Portion 2 from Westerman. His intention was simple and enduring: to give his family a place to come to the bush — to be among the animals, to breathe the bushveld air, to step away from busy lives and reconnect with what matters. A place to disconnect, and to spend real time with family and friends.</p>
-          <p>It was the beginning of a family connection to this land that now spans over seventy years.</p>
-          <p>The farm sits in the Crocodile River valley, the same river that Harris and Selous had crossed over a century before, and the same landscape that Smith's scientists had documented in meticulous detail.</p>
+          <p>It was the beginning of a family connection to this land that now spans over seventy years. The same farm where Harris and Selous had hunted, where Smith's scientists had documented the landscape, and which a 1966 scientific journal would use as the geographical reference point for where the Limpopo itself begins.</p>
         </div>
       </div>
 
@@ -681,7 +701,7 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         <div class="tl-year">1955</div>
         <div class="tl-content">
           <div class="tl-heading">Growing the Land</div>
-          <p>EA Faber purchased Rooibokkraal Portion 1 from Ted Fair, consolidating the two portions of the original farm. In the same year, Krokodilsdraai and Buffelsdraai were bought from Wallace — expanding the family's foothold along the river that gives Krokodilsdraai its name.</p>
+          <p>EA Faber purchased Rooibokkraal Portion 1 from Ted Fair, consolidating the two portions of the original farm. In the same year, Krokodilsdraai and Buffelsdraai were bought from Wallace — expanding the family's foothold along the Crocodile River that gives Krokodilsdraai its name.</p>
         </div>
       </div>
 
@@ -701,6 +721,14 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
         </div>
       </div>
 
+      <div class="tl-item">
+        <div class="tl-year">1966</div>
+        <div class="tl-content">
+          <div class="tl-heading">Named in Science</div>
+          <p>D.M. Joubert's article <em>Along the Lower Limpopo</em>, published in the <em>South African Journal of Science</em> (Vol. 62, November 1966), uses Rooibokkraal by name as the geographical landmark where the Limpopo river frontier begins — describing the river as also known as "the Crocodile, the River of Gold, and the River of Kings." The farm's position at the birthplace of one of Africa's great rivers is confirmed in the scientific record.</p>
+        </div>
+      </div>
+
       <div class="tl-item tl-family">
         <div class="tl-year">Today</div>
         <div class="tl-content">
@@ -712,6 +740,51 @@ header{background:var(--earth);padding:0 20px;height:60px;display:flex;align-ite
       </div>
 
     </div>
+
+    <!-- DID YOU KNOW — expandable cards below timeline -->
+    <div class="dyk-section">
+      <div class="dyk-title">Did You Know?</div>
+      <div class="dyk-list">
+
+        <div class="dyk-item" onclick="toggleDyk(this)">
+          <div class="dyk-header">
+            <span class="dyk-icon">🌿</span>
+            <span class="dyk-summary">The sweet veldt makes animals bigger</span>
+            <span class="dyk-chevron">&#9660;</span>
+          </div>
+          <div class="dyk-body">Rooibokkraal sits on a rare natural sweet veldt — a soil type so rich that game living here grow noticeably larger and heavier than on mixed or sour veldt. The giant Leadwood (Hardekool) trees on the farm are hundreds of years old, predating the farm itself by centuries.</div>
+        </div>
+
+        <div class="dyk-item" onclick="toggleDyk(this)">
+          <div class="dyk-header">
+            <span class="dyk-icon">💎</span>
+            <span class="dyk-summary">You are standing on 70% of the world's platinum</span>
+            <span class="dyk-chevron">&#9660;</span>
+          </div>
+          <div class="dyk-body">The ground beneath the farm is part of the Bushveld Igneous Complex — a 2-billion-year-old geological formation that is the source of roughly 70% of the world's platinum. When you stand on Rooibokkraal, you are standing on some of the most mineral-rich rock on the planet.</div>
+        </div>
+
+        <div class="dyk-item" onclick="toggleDyk(this)">
+          <div class="dyk-header">
+            <span class="dyk-icon">🦛</span>
+            <span class="dyk-summary">Kipling's river starts here</span>
+            <span class="dyk-chevron">&#9660;</span>
+          </div>
+          <div class="dyk-body">Rudyard Kipling immortalised the river that begins next to the farm in his 1902 <em>Just So Stories</em>, calling it "the great grey-green, greasy Limpopo River, all set about with fever-trees." The 1966 scientific journal confirms those same Yellow-barked Fever trees (<em>Acacia xanthophloea</em>) still line the banks today.</div>
+        </div>
+
+        <div class="dyk-item" onclick="toggleDyk(this)">
+          <div class="dyk-header">
+            <span class="dyk-icon">🔥</span>
+            <span class="dyk-summary">A plant that sets the river alight</span>
+            <span class="dyk-chevron">&#9660;</span>
+          </div>
+          <div class="dyk-body">Along the Limpopo banks grows the Flame Creeper (<em>Combretum microphyllum</em>), a woody climber whose flowers open white, gradually turn pink, then burst into flaming red. The 1966 journal describes it as "virtually setting the Limpopo alight" — one of the most spectacular sights of the river valley in spring.</div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -1494,6 +1567,12 @@ function switchUser(){
   updateUserBadge();
   populateIdentitySelect();
   document.getElementById('identityOverlay').classList.add('open');
+}
+
+/* ── DID YOU KNOW toggle (mobile tap) ── */
+function toggleDyk(el){
+  /* On touch devices, toggle open/closed on tap */
+  el.classList.toggle('open');
 }
 
 /* ── TABS ── */
